@@ -1,11 +1,13 @@
 const mysql = require('mysql');
+const config = require('config');
+
 
 exports.cnxPool = mysql.createPool({
   connectionLimit: 20,
-  host: 'localhost',
+  host: config.get("DBHost"),
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: 'flc'
+  database: config.get("Database")
 });
 
 exports.countPromise = (table, where={}) => {

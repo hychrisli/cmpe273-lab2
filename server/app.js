@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
-
 var index = require('./routes/index');
 var swagger = require('./swagger');
 var users = require('./controllers/users-ctrl');

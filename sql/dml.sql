@@ -1,5 +1,3 @@
-USE flc;
-
 INSERT INTO USER (username, password, email, image, image_url)
 VALUES ('xyz', '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6', 'xyz@email.com',
         'xyz_profile02.jpg', 'http://localhost:5000/api/images/xyz');
