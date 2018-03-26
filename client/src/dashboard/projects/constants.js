@@ -1,0 +1,2 @@
+export const PROJECT_SET = 'PROJECT_SET';
+export const PROJECT_UNSET = 'PROJECT_UNSET';

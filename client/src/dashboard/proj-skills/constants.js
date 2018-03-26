@@ -1,0 +1,2 @@
+export const SKILLS_CHOICES_SET = 'SKILLS_SET';
+export const SKILLS_CHOICES_UNSET = 'SKILLS_UNSET';
