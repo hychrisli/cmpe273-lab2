@@ -3,9 +3,6 @@ const server = require('../app');
 const chaiHttp = require('chai-http');
 const should = chai.should();
 
-process.env.NODE_ENV = 'test';
-
-
 chai.use(chaiHttp);
 describe('Users', ()=>{
 
