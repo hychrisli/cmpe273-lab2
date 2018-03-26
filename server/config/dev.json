@@ -1,4 +1,4 @@
 {
   "DBHost": "localhost",
-  "database": "flc"
+  "Database": "flc"
 }
