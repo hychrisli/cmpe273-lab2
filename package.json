@@ -1,0 +1,14 @@
+{
+  "name": "react-rest-express",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "client": "cd client && BROWSER=none npm start",
+    "server": "cd server && npm start",
+    "start": "concurrently --kill-others-on-fail \"npm run client\" \"npm run server\" "
+  },
+  "devDependencies": {
+    "concurrently": "^1.0.0"
+  },
+  "dependencies": {}
+}

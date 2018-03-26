@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "9.4.0"
+services:
+  - mysql
+env:
+  - DB_USER=root
+before_install:
+  - mysql -u root --password="" < sql/setup.sql
+  - mysql flctest -u root --password="" < sql/ddl.sql
+  - mysql flctest -u root --password="" < sql/dml.sql
+script:
+  - cd server
+  - npm install
+  - npm test
