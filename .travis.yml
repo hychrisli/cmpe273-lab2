@@ -3,4 +3,5 @@ node_js:
   - "9.4.0"
 script:
   - cd server
+  - npm install
   - npm test
