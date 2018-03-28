@@ -12,9 +12,17 @@ var options = {
     },
     schemes: ['http'],
     host: 'localhost:5000',
-    basePath: '/api'
+    basePath: '/api',
+    securityDefinitions: {
+      bearer: {
+        type: "apiKey",
+        name: "Authorization",
+        in: "header"
+      }
+    },
   },
-  apis: [ __dirname + '/controllers/*', __dirname + '/models/*'],
+  apis: [__dirname + '/controllers/*', __dirname + '/models/*'],
+  security: []
 };
 
 const swaggerSpec = swaggerJSDoc(options);

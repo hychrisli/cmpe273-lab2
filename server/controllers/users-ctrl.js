@@ -8,14 +8,20 @@ const {
   promisePutOneResponse
 } = require('./ctrls');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const {key} = require('../auth/constants');
+require('../auth/passport')(passport);
 
 /**
  * @swagger
  * /users:
  *  get:
  *    description: Retrieve all users
+ *    security:
+ *      - bearer: []
  *    tags:
- *       - users
+ *      - users
  *    produces:
  *      - application/json
  *    responses:
@@ -24,8 +30,13 @@ const bcrypt = require('bcrypt');
  *        schema:
  *          $ref: '#/definitions/Users'
  */
-router.get('/', (req, res) => {
-  promiseGetResponse(userDao.retrieveAll(), res, 200);
+router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
+  console.log(req.headers);
+  const token = getToken(req.headers);
+  if ( token )
+    promiseGetResponse(userDao.retrieveAll(), res, 200);
+  else
+    return res.status(403).send({success: false, msg: 'Unauthorized'});
 });
 
 
@@ -34,8 +45,10 @@ router.get('/', (req, res) => {
  * /users/{id}:
  *  get:
  *    description: Retrieve User Info
+ *    security:
+ *      - bearer: []
  *    tags:
- *       - users
+ *      - users
  *    produces:
  *      - application/json
  *    parameters:
@@ -51,6 +64,7 @@ router.get('/', (req, res) => {
  *          $ref: '#/definitions/User'
  */
 router.get('/:id', function (req, res, next) {
+  console.log(req.headers);
   console.log(req.params.id);
   const id = req.params.id;
   let promise;
@@ -106,6 +120,8 @@ router.post('/', function (req, res, next) {
  * /users/login:
  *  post:
  *    description: login a user
+ *    tags:
+ *       - users
  *    produces:
  *      - application/json
  *    parameters:
@@ -127,14 +143,19 @@ router.post('/login', function (req, res, next) {
   const username = req.body.username;
   console.log(req.body);
   console.log(req.body.password);
+
   const promise = userDao.retrieveByUserName(username);
   promise.then((val)=>{
     if (val.length > 0) {
       console.log(val);
       if(bcrypt.compareSync(req.body.password, val[0].password)){
-        return res.send(val[0]);
+        const token = jwt.sign({user: val[0]}, key);
+        console.log("token here");
+        console.log(token);
+        res.send({success: true, token: 'bearer ' + token});
       }
-      else res.status(400).send({login: "wrong password"});
+      else
+        res.status(400).send({login: "wrong password"});
     }
     else res.status(404).send({login: "no such user"});
   }).catch((err) => {res.send(err)});
@@ -198,3 +219,17 @@ router.put('/:username', function (req, res, next) {
 });
 
 module.exports = router;
+
+
+getToken = function (headers) {
+  if (headers && headers.authorization) {
+    var parted = headers.authorization.split(' ');
+    if (parted.length === 2) {
+      return parted[1];
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};

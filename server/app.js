@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
+const session = require('express-session');
+const passport = require('passport');
 
 var index = require('./routes/index');
 var swagger = require('./swagger');
@@ -41,6 +43,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(session({secret: 'secret cat', resave: true, saveUninitialized:true}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 app.use('/api/docs', swagger);
