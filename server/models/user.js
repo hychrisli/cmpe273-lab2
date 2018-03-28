@@ -3,12 +3,11 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
-  _id: ObjectId,
-  username: String,
+  username: {type: String, unique: true, required: true, dropDups: true},
   firstName: String,
   lastName: String,
-  password: String,
-  email: String,
+  password: {type: String, required: true},
+  email: {type: String, required:true},
   image: String,
   imageUrl: String,
   aboutMe: String,

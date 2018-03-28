@@ -12,6 +12,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const {key} = require('../auth/constants');
 const User = require('../models/user');
+const handleRes = require('./handle-ctrl');
 require('../auth/passport')(passport);
 
 /**
@@ -30,13 +31,10 @@ require('../auth/passport')(passport);
  *        description: users
  */
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-  //promiseGetResponse(userDao.retrieveAll(), res, 200);
 
   User.find({}, (err, docs) => {
-    if ( err )
-      res.status(500).send({success: false, message: "Internal System Error"});
-    else
-      res.send(docs);
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else res.send(docs);
   })
 
 });
@@ -58,23 +56,26 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *        description: user ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *    responses:
  *      200:
  *        description: a user
  */
-router.get('/:id', function (req, res, next) {
-  console.log(req.headers);
-  console.log(req.params.id);
+router.get('/:id',(req, res) => {
   const id = req.params.id;
-  let promise;
+  User.findOne({_id: id}, (err, doc) => {
+    if (err) handleRes.sendNotFound(res, err);
+    else res.send(doc);
+  });
+
+/*  let promise;
   if ( id.match(/^-{0,1}\d+$/)){
     promise = userDao.retrieve(Number(id));
   }
   else {
     promise = userDao.retrieveByUserName(id);
   }
-  promiseGetOneResponse(promise, res, 200);
+  promiseGetOneResponse(promise, res, 200);*/
 });
 
 
@@ -112,7 +113,17 @@ router.post('/', function (req, res, next) {
   console.log(form);
   console.log(form.password);
   form.password = bcrypt.hashSync(form.password, 10);
-  promisePostResponse(userDao.insert(form), req, res, 201);
+  const user = new User({
+    username: form.username,
+    password: form.password,
+    email: form.email
+  });
+
+  user.save((err) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendCreated(res);
+  })
+
 });
 
 /**
@@ -140,15 +151,22 @@ router.post('/', function (req, res, next) {
  *        description: login success
  */
 router.post('/login', function (req, res, next) {
-  const username = req.body.username;
+
   console.log(req.body);
-  console.log(req.body.password);
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if ( username === undefined || username === null || username === "") {
+    handleRes.sendBadRequest(res, "Username Not Specified");
+    next();
+  } else if ( password === undefined || password === null || password === "") {
+    handleRes.sendBadRequest(res, "Password Not Specified");
+    next();
+  }
 
   User.findOne({username}, (err, doc) => {
-    console.log(doc);
-    if ( err )
-      res.status(500).send({success: false, message: "Internal Server Error"});
-    else if ( doc === {})
+    if ( err ) handleRes.sendInternalSystemError(res, err);
+    else if ( doc === null)
       res.status(404).send({success: false, message: "No Such User"});
     else if ( !bcrypt.compareSync(req.body.password, doc.password ))
       res.status(401).send({success: false, message: "Wrong Password"});
@@ -156,25 +174,7 @@ router.post('/login', function (req, res, next) {
       const token = jwt.sign({user: doc}, key);
       res.send({success: true, token: 'bearer ' + token});
     }
-
   });
-
-
-  // const promise = userDao.retrieveByUserName(username);
-  // promise.then((val)=>{
-  //   if (val.length > 0) {
-  //     console.log(val);
-  //     if(bcrypt.compareSync(req.body.password, val[0].password)){
-  //       const token = jwt.sign({user: val[0]}, key);
-  //       console.log("token here");
-  //       console.log(token);
-  //       res.send({success: true, token: 'bearer ' + token});
-  //     }
-  //     else
-  //       res.status(400).send({login: "wrong password"});
-  //   }
-  //   else res.status(404).send({login: "no such user"});
-  // }).catch((err) => {res.send(err)});
 });
 
 
@@ -203,17 +203,17 @@ router.post('/login', function (req, res, next) {
  *        in: formData
  *        required: false
  *        type: string
- *      - name: first_name
+ *      - name: firstName
  *        description: first name of the user.
  *        in: formData
  *        required: false
  *        type: string
- *      - name: last_name
+ *      - name: lastName
  *        description: last name of the user.
  *        in: formData
  *        required: false
  *        type: string
- *      - name: about_me
+ *      - name: aboutMe
  *        description: my bio.
  *        in: formData
  *        required: false
@@ -226,12 +226,18 @@ router.put('/:username', function (req, res, next) {
   console.log(req.body);
   const username = req.params.username;
   let form = req.body;
-
   if (form.password !== undefined)
     form.password = bcrypt.hashSync(form.password, 10);
-  promisePutOneResponse(
-    userDao.update(username, form),
-    userDao.retrieve(username), res, 200);
+
+  User.update({username}, {$set: form}, (err) => {
+    if (err) handleRes.sendInternalSystemError(res);
+    else {
+      User.findOne({username}, (err, user) => {
+        if (err) handleRes.sendNotFound(res);
+        else res.send(user);
+      })
+    }
+  })
 });
 
 module.exports = router;
