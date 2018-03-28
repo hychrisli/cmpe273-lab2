@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const {key} = require('../auth/constants');
+const User = require('../models/user');
 require('../auth/passport')(passport);
 
 /**
@@ -27,16 +28,17 @@ require('../auth/passport')(passport);
  *    responses:
  *      200:
  *        description: users
- *        schema:
- *          $ref: '#/definitions/Users'
  */
-router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
-  console.log(req.headers);
-  const token = getToken(req.headers);
-  if ( token )
-    promiseGetResponse(userDao.retrieveAll(), res, 200);
-  else
-    return res.status(403).send({success: false, msg: 'Unauthorized'});
+router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+  //promiseGetResponse(userDao.retrieveAll(), res, 200);
+
+  User.find({}, (err, docs) => {
+    if ( err )
+      res.status(500).send({success: false, message: "Internal System Error"});
+    else
+      res.send(docs);
+  })
+
 });
 
 
@@ -60,8 +62,6 @@ router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
  *    responses:
  *      200:
  *        description: a user
- *        schema:
- *          $ref: '#/definitions/User'
  */
 router.get('/:id', function (req, res, next) {
   console.log(req.headers);
@@ -144,21 +144,37 @@ router.post('/login', function (req, res, next) {
   console.log(req.body);
   console.log(req.body.password);
 
-  const promise = userDao.retrieveByUserName(username);
-  promise.then((val)=>{
-    if (val.length > 0) {
-      console.log(val);
-      if(bcrypt.compareSync(req.body.password, val[0].password)){
-        const token = jwt.sign({user: val[0]}, key);
-        console.log("token here");
-        console.log(token);
-        res.send({success: true, token: 'bearer ' + token});
-      }
-      else
-        res.status(400).send({login: "wrong password"});
+  User.findOne({username}, (err, doc) => {
+    console.log(doc);
+    if ( err )
+      res.status(500).send({success: false, message: "Internal Server Error"});
+    else if ( doc === {})
+      res.status(404).send({success: false, message: "No Such User"});
+    else if ( !bcrypt.compareSync(req.body.password, doc.password ))
+      res.status(401).send({success: false, message: "Wrong Password"});
+    else {
+      const token = jwt.sign({user: doc}, key);
+      res.send({success: true, token: 'bearer ' + token});
     }
-    else res.status(404).send({login: "no such user"});
-  }).catch((err) => {res.send(err)});
+
+  });
+
+
+  // const promise = userDao.retrieveByUserName(username);
+  // promise.then((val)=>{
+  //   if (val.length > 0) {
+  //     console.log(val);
+  //     if(bcrypt.compareSync(req.body.password, val[0].password)){
+  //       const token = jwt.sign({user: val[0]}, key);
+  //       console.log("token here");
+  //       console.log(token);
+  //       res.send({success: true, token: 'bearer ' + token});
+  //     }
+  //     else
+  //       res.status(400).send({login: "wrong password"});
+  //   }
+  //   else res.status(404).send({login: "no such user"});
+  // }).catch((err) => {res.send(err)});
 });
 
 
@@ -219,17 +235,3 @@ router.put('/:username', function (req, res, next) {
 });
 
 module.exports = router;
-
-
-getToken = function (headers) {
-  if (headers && headers.authorization) {
-    var parted = headers.authorization.split(' ');
-    if (parted.length === 2) {
-      return parted[1];
-    } else {
-      return null;
-    }
-  } else {
-    return null;
-  }
-};
