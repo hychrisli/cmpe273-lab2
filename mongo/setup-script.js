@@ -87,30 +87,55 @@ db.UserSkill.insert([
 // Project
 db.Project.drop();
 db.createCollection('Project');
-db.Project.insert({
+db.Project.insert([
+  {
+    title: 'project 1',
+    description: 'This is Project 1',
+    employerId: db.User.findOne({username:'xyz'})._id.str,
+    minBudget: 300.0,
+    maxBudget: 400.0,
+    startDate: new Date('2018-01-23')
+  },
+  {
+    title: 'project 2',
+    description: 'Hello hello project 2',
+    employerId: db.User.findOne({username:'xyz'})._id.str,
+    minBudget: 400.0,
+    maxBudget: 600.0,
+    startDate: new Date('2017-12-24')
+  },
+  {
+    title: 'project 3',
+    description: 'Here again project 3',
+    employerId: db.User.findOne({username:'abc'})._id.str,
+    minBudget: 500.0,
+    maxBudget: 800.0,
+    startDate: new Date('2018-02-12')
+  }
+]);
 
-  title: 'project 1',
-  description: 'This is Project 1',
-  employerId: db.User.findOne({username:'xyz'})._id.str,
-  minBudget: 300.0,
-  maxBudget: 400.0,
-  startDate: new Date('2018-01-23')
-});
-db.Project.insert({
-
-  title: 'project 2',
-  description: 'Hello hello project 2',
-  employerId: db.User.findOne({username:'xyz'})._id.str,
-  minBudget: 400.0,
-  maxBudget: 600.0,
-  startDate: new Date('2017-12-24')
-});
-db.Project.insert({
-
-  title: 'project 3',
-  description: 'Here again project 3',
-  employerId: db.User.findOne({username:'abc'})._id.str,
-  minBudget: 500.0,
-  maxBudget: 800.0,
-  startDate: new Date('2018-02-12')
-});
+// Project Skill
+db.ProjctSkill.drop();
+db.createCollection('ProjectSkill');
+db.ProjectSkill.insert([
+  {
+    projectId: db.Project.findOne({title:'project 1'})._id.str,
+    skillId: db.Skill.findOne({skillName:'Java'})._id.str,
+  },
+  {
+    projectId: db.Project.findOne({title:'project 1'})._id.str,
+    skillId: db.Skill.findOne({skillName:'JQuery'})._id.str,
+  },
+  {
+    projectId: db.Project.findOne({title:'project 3'})._id.str,
+    skillId: db.Skill.findOne({skillName:'Spark'})._id.str,
+  },
+  {
+    projectId: db.Project.findOne({title:'project 3'})._id.str,
+    skillId: db.Skill.findOne({skillName:'AWS'})._id.str,
+  },
+  {
+    projectId: db.Project.findOne({title:'project 2'})._id.str,
+    skillId: db.Skill.findOne({skillName:'GCP'})._id.str,
+  }
+]);

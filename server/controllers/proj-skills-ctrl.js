@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const projSkillDao = require('../dao/proj-skills-dao');
-const {promiseGetResponse, promisePostResponse, promiseGetOneResponse} = require('./ctrls');
+const ProjectSkill = require('../models/project-skill');
+const handleRes = require('./handle-res');
+
 
 /**
  * @swagger
@@ -13,7 +14,7 @@ const {promiseGetResponse, promisePostResponse, promiseGetOneResponse} = require
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: project_id
+ *      - name: projectId
  *        in : query
  *        required: false
  *        type: string
@@ -23,12 +24,16 @@ const {promiseGetResponse, promisePostResponse, promiseGetOneResponse} = require
  *        description: project skills
  */
 router.get('/', (req, res) => {
-  const project_id = req.query.project_id;
+  const projectId = req.query.projectId;
   let filter = {};
-  if (project_id !== undefined) {
-    filter['project_id'] = project_id;
+  if (projectId !== undefined) {
+    filter.projectId = projectId;
   }
-  promiseGetResponse(projSkillDao.retrieve(filter), res, 200);
+  ProjectSkill.find(filter, (err, docs) => {
+    if (err) handleRes.sendNotFound(res, err);
+    else handleRes.sendArray(res, docs);
+  })
+
 });
 
 /**
@@ -41,23 +46,40 @@ router.get('/', (req, res) => {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: project_id
+ *      - name: projectId
  *        description: project id
  *        in: formData
  *        required: true
  *        type: string
- *      - name: skill_id
+ *      - name: skillId
  *        description: skill id
  *        in: formData
  *        required: true
- *        type: string
+ *        type: array
+ *        items:
+ *          type: string
  *    responses:
  *      201:
  *        description: skill added to project
  */
 router.post('/', (req, res) => {
-  console.log(req.body);
-  promisePostResponse(projSkillDao.insert(req.body, 'skill_id'), req, res, 201);
+  const projectId = req.body.projectId;
+  const skillIds = req.body.skillId.split(',');
+  if (skillIds === undefined || !Array.isArray(skillIds) || skillIds.length === 0)
+    handleRes.sendBadRequest(res, "Invalid Skill Array");
+  else {
+    projectSkills = [];
+    for (let i = 0; i < skillIds.length; i++) {
+      projectSkills.push({
+        projectId,
+        skillId: skillIds[i]
+      });
+    }
+    ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err) => {
+      if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendCreated(res);
+    });
+  }
 });
 
 module.exports = router;
