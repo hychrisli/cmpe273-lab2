@@ -1,6 +1,5 @@
 const mongoose = require('./db');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
   username: {type: String, unique: true, required: true, dropDups: true},

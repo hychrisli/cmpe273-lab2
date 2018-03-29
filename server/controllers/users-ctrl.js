@@ -1,12 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const userDao = require('../dao/users-dao');
-const {
-  promiseGetResponse,
-  promisePostResponse,
-  promiseGetOneResponse,
-  promisePutOneResponse
-} = require('./ctrls');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
@@ -34,7 +27,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 
   User.find({}, (err, docs) => {
     if (err) handleRes.sendInternalSystemError(res, err);
-    else res.send(docs);
+    else handleRes.sendArray(res, docs);
   })
 
 });
@@ -67,15 +60,6 @@ router.get('/:id',(req, res) => {
     if (err) handleRes.sendNotFound(res, err);
     else res.send(doc);
   });
-
-/*  let promise;
-  if ( id.match(/^-{0,1}\d+$/)){
-    promise = userDao.retrieve(Number(id));
-  }
-  else {
-    promise = userDao.retrieveByUserName(id);
-  }
-  promiseGetOneResponse(promise, res, 200);*/
 });
 
 

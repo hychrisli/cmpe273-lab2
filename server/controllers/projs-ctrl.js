@@ -5,6 +5,8 @@ const projSkillDao = require('../dao/proj-skills-dao');
 const projFilesDao = require('../dao/proj-files-dao');
 const BidDao = require('../dao/bids-dao');
 const {promiseGetResponse, promisePostResponse} = require('./ctrls');
+const Project = require('../models/project');
+const handleRes = require('./handle-ctrl');
 
 /**
  * @swagger
@@ -16,7 +18,7 @@ const {promiseGetResponse, promisePostResponse} = require('./ctrls');
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: employer
+ *      - name: employerId
  *        in : query
  *        required: false
  *        type: string
@@ -26,22 +28,22 @@ const {promiseGetResponse, promisePostResponse} = require('./ctrls');
  *        description: projects
  */
 router.get('/', (req, res) => {
-  const employer_id = req.query.employer_id;
+  const employerId = req.query.employerId;
   let filter = {};
-  if (employer_id !== undefined){
-    console.log(employer_id);
-    filter['employer_id'] = employer_id;
-  }
-
-  promiseGetResponse(projDao.retrieveAll(filter), res, 200);
+  if (employerId !== undefined) filter.employerId = employerId;
+  Project.find(filter, (err, docs) => {
+    if (err) handleRes.sendInternalSystemError(res);
+    else handleRes.sendArray(res, docs);
+  })
+  //promiseGetResponse(projDao.retrieveAll(filter), res, 200);
 });
 
 
 /**
  * @swagger
- * /projects/{project_id}:
+ * /projects/{projectId}:
  *  get:
- *    description: Retrieve User Info
+ *    description: Retrieve Project Info
  *    tags:
  *       - projects
  *    produces:
@@ -56,8 +58,8 @@ router.get('/', (req, res) => {
  *      200:
  *        description: a project
  */
-router.get('/:project_id', function (req, res, next) {
-  const project_id = req.params.project_id;
+router.get('/:projectId', function (req, res, next) {
+  const project_id = req.params.projectId;
 
   if (project_id !== undefined) {
     const projPromise = projDao.retrieve(Number(project_id));
@@ -150,22 +152,22 @@ router.get('/:project_id', function (req, res, next) {
  *        in: formData
  *        required: true
  *        type: string
- *      - name: employer
+ *      - name: employerId
  *        description: Employer's user ID
  *        in: formData
  *        required: true
  *        type: string
- *      - name: min_budget
+ *      - name: minBudget
  *        description: minimum budget of the project
  *        in: formData
- *        required: false
- *        type: string
- *      - name: max_budget
+ *        required: true
+ *        type: number
+ *      - name: maxBudget
  *        description: maximum budget of the project
  *        in: formData
- *        required: false
- *        type: string
- *      - name: start_date
+ *        required: true
+ *        type: number
+ *      - name: startDate
  *        description: The start date of the project
  *        in: formData
  *        required: true
@@ -175,9 +177,12 @@ router.get('/:project_id', function (req, res, next) {
  *        description: project created
  */
 router.post('/', (req, res) => {
-  const date =  new Date(req.body.start_date);
-  req.body.start_date = date.toISOString().slice(0,10);
-  promisePostResponse(projDao.insert(req.body), req, res, 201);
+  req.body.startDate = new Date(req.body.startDate);
+  const project = new Project(req.body);
+  project.save((err) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendCreated(res);
+  });
 });
 
 
