@@ -38,8 +38,8 @@ function* pUpdFlow(action){
     if (values.lastName !== undefined) body['last_name'] = values.lastName;
     if (values.aboutMe !== undefined) body['about_me'] = values.aboutMe;
 
-    console.log(body);
-    const token = yield call(pUpdApi, username, body);
+    console.log(values);
+    const token = yield call(pUpdApi, username, values);
     localStorage.setItem('token', JSON.stringify(token));
     yield put(setClient(token));
     yield put({type: PROFILE_UPDATE_SUCCESS});

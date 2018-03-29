@@ -5,9 +5,10 @@ const {
   promiseGetResponse,
   promisePostResponse,
   promiseGetOneResponse,
-  promiseGetPagedResponse,
-  paginate} = require('./ctrls');
-
+  promiseGetPagedResponse} = require('./ctrls');
+const Skill = require('../models/skill');
+const {paginate} = require('./lib');
+const handleRes = require('./handle-res');
 /**
  * @swagger
  * /skills:
@@ -39,14 +40,18 @@ const {
  */
 router.get('/', (req, res) => {
   const pagin = paginate(req);
-  console.log(req.query.id);
-  promiseGetPagedResponse(skillDao.count(), skillDao.retrieveAll(pagin), res, 200);
+  Promise.all([
+    Skill.count({}),
+    Skill.find({}).skip(pagin.skip).limit(pagin.limit)
+  ]).then( ([cnt, skills]) => {
+    handleRes.sendArray(res, skills, cnt);
+  }).catch(err => handleRes.sendInternalSystemError(res, err))
 });
 
 
 /**
  * @swagger
- * /skills/{skill_id}:
+ * /skills/{skillId}:
  *  get:
  *    description: Retrieve skill info
  *    tags:
@@ -54,20 +59,24 @@ router.get('/', (req, res) => {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: skill_id
+ *      - name: skillId
  *        description: skill ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *    responses:
  *      200:
  *        description: a project
  */
-router.get('/:skill_id', function (req, res, next) {
-  const skill_id = req.params.skill_id;
-  if ( skill_id !== undefined )
-    promiseGetOneResponse(skillDao.retrieve(Number(skill_id)), res, 200);
-  else res.status(400).send("Empty Skill ID");
+router.get('/:skillId', function (req, res) {
+  const skillId = req.params.skillId;
+  if ( skillId !== undefined && skillId !== "")
+    Skill.findOne({_id: skillId}, (err, doc) => {
+      if (err) handleRes.sendNotFound(res, err);
+      else handleRes.sendDoc(res, doc);
+    });
+  else
+    handleRes.sendBadRequest(res, "Empty skill Id")
 });
 
 /**
@@ -80,7 +89,7 @@ router.get('/:skill_id', function (req, res, next) {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: skill_name
+ *      - name: skillName
  *        description: The Name of the skill
  *        in: formData
  *        required: true
@@ -90,7 +99,16 @@ router.get('/:skill_id', function (req, res, next) {
  *        description: skill created
  */
 router.post('/', (req, res) => {
-  promisePostResponse(skillDao.insert(req.body), req, res, 201);
+  if ( req.body.skillName === undefined) handleRes.sendBadRequest("Skill Name Needed");
+  else {
+    const skill = new Skill({
+      skillName: req.body.skillName
+    });
+    skill.save((err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendCreated(res);
+    })
+  }
 });
 
 module.exports = router;

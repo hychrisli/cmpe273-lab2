@@ -7,7 +7,7 @@ export const SkillList = (props) => (
   <List title="Skills" {...props}>
     <Datagrid>
       <TextField source="id"/>
-      <TextField source={"skill_name"}/>
+      <TextField source={"skillName"}/>
     </Datagrid>
   </List>
 );
@@ -15,7 +15,7 @@ export const SkillList = (props) => (
 export const SkillCreate = (props) => (
   <Create {...props} >
     <SimpleForm>
-      <TextInput source="skill_name"/>
+      <TextInput source="skillName"/>
     </SimpleForm>
   </Create>
 );

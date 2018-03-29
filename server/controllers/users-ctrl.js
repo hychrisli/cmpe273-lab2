@@ -5,7 +5,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const {key} = require('../auth/constants');
 const User = require('../models/user');
-const handleRes = require('./handle-ctrl');
+const handleRes = require('./handle-res');
 require('../auth/passport')(passport);
 
 /**
@@ -23,8 +23,8 @@ require('../auth/passport')(passport);
  *      200:
  *        description: users
  */
-router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-
+//router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/', (req, res) => {
   User.find({}, (err, docs) => {
     if (err) handleRes.sendInternalSystemError(res, err);
     else handleRes.sendArray(res, docs);
@@ -58,7 +58,7 @@ router.get('/:id',(req, res) => {
   const id = req.params.id;
   User.findOne({_id: id}, (err, doc) => {
     if (err) handleRes.sendNotFound(res, err);
-    else res.send(doc);
+    else handleRes.sendDoc(res, doc);
   });
 });
 
@@ -94,8 +94,6 @@ router.get('/:id',(req, res) => {
  */
 router.post('/', function (req, res, next) {
   let form = req.body;
-  console.log(form);
-  console.log(form.password);
   form.password = bcrypt.hashSync(form.password, 10);
   const user = new User({
     username: form.username,
@@ -218,7 +216,7 @@ router.put('/:username', function (req, res, next) {
     else {
       User.findOne({username}, (err, user) => {
         if (err) handleRes.sendNotFound(res);
-        else res.send(user);
+        else handleRes.sendDoc(user);
       })
     }
   })

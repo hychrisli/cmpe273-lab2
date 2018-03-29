@@ -6,7 +6,7 @@ const projFilesDao = require('../dao/proj-files-dao');
 const BidDao = require('../dao/bids-dao');
 const {promiseGetResponse, promisePostResponse} = require('./ctrls');
 const Project = require('../models/project');
-const handleRes = require('./handle-ctrl');
+const handleRes = require('./handle-res');
 
 /**
  * @swagger

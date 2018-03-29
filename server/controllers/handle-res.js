@@ -7,10 +7,17 @@ exports.sendCreated = (res) => {
   res.status(201).send({success: true, message: "created"});
 };
 
-exports.sendArray = (res, array) => {
-  res = setArrayHeader(res, array);
+exports.sendArray = (res, array, total=0) => {
+  res = setArrayHeader(res, array, total);
   let jsonStr = JSON.stringify(array);
   jsonStr = jsonStr.replace(/\"_id\":/g, "\"id\":");
+  res.send(jsonStr);
+};
+
+exports.sendDoc = (res, doc) => {
+  res = setObjectHeader(res);
+  let jsonStr = JSON.stringify(doc);
+  jsonStr = jsonStr.replace("\"_id\":", "\"id\":");
   res.send(jsonStr);
 };
 
@@ -33,11 +40,14 @@ exports.sendBadRequest = (res, msg) => {
 };
 
 const setObjectHeader = (res) => {
-  return setArrayHeader(res, [1]);
+  return setArrayHeader(res, [], 1);
 };
 
-const setArrayHeader = (res, array) => {
-  res.set('X-Total-Count', array.length);
+const setArrayHeader = (res, array, total=0) => {
+  if (total === 0)
+    res.set('X-Total-Count', array.length);
+  else
+    res.set('X-Total-Count', total);
   res.set('Access-Control-Expose-Headers', 'X-Total-Count');
   return res;
 };
