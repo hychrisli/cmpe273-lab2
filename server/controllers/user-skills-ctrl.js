@@ -64,22 +64,21 @@ router.get('/', (req, res) => {
  */
 router.post('/', (req, res, next) => {
   const userId = req.body.userId;
-  const skillIds = req.body.skillId.split(',');
-  if (skillIds === undefined || !Array.isArray(skillIds) || skillIds.length === 0)
-    handleRes.sendBadRequest(res, "Invalid Skill Array");
-  else {
-    userSkills = [];
-    for (let i = 0; i < skillIds.length; i++) {
-      userSkills.push({
-        userId,
-        skillId: skillIds[i]
-      });
-    }
-    UserSkill.collection.insert(userSkills, {ordered: false}, (err) => {
-      if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendCreated(res);
+  let skillIds = req.body.skillId;
+  if (!Array.isArray(skillIds))
+    skillIds = skillIds.split(',');
+
+  userSkills = [];
+  for (let i = 0; i < skillIds.length; i++) {
+    userSkills.push({
+      userId,
+      skillId: skillIds[i]
     });
   }
+  UserSkill.collection.insert(userSkills, {ordered: false}, (err) => {
+    if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendCreated(res);
+  });
 });
 
 module.exports = router;

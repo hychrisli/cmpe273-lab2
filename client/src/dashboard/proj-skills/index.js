@@ -8,7 +8,7 @@ import NotAuthorized from '../lib/not-authorized'
 
 const ProjFilter = (props) => (
   <Filter {...props}>
-    <TextInput label={"Project Id"} source={"project_id"}/>
+    <TextInput label={"Project Id"} source={"projectId"}/>
   </Filter>
 );
 
@@ -16,11 +16,11 @@ export const ProjSkillList = (props) => (
   <List title="Skills" {...props} filters={<ProjFilter/>}>
     <Datagrid>
       <TextField source="id"/>
-      <ReferenceField label={"Project"} source="project_id" reference={"projects"} linkType="show">
+      <ReferenceField label={"Project"} source="projectId" reference={"projects"} linkType="show">
         <TextField source={"title"}/>
       </ReferenceField>
-      <ReferenceField label={"Skill"} source="skill_id" reference={"skills"} linkType="show">
-        <TextField source={"skill_name"}/>
+      <ReferenceField label={"Skill"} source="skillId" reference={"skills"} linkType="show">
+        <TextField source={"skillName"}/>
       </ReferenceField>
     </Datagrid>
   </List>
@@ -43,8 +43,8 @@ const ProjSkillCreate = (props) => {
     return (
     <Create {...props} title={"Add Skill for" + project.title}>
       <SimpleForm redirect={"/projects/" + project.id} submitOnEnter={false}>
-        <TextInput source="project_id" defaultValue={project.id}/>
-        <SelectArrayInput source="skill_id" choices={skillChoices} optionText="skill_name" optionValue="id" />
+        <TextInput source="projectId" defaultValue={project.id}/>
+        <SelectArrayInput source="skillId" choices={skillChoices} optionText="skillName" optionValue="id" />
       </SimpleForm>
     </Create> )
   }

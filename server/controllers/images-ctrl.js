@@ -4,6 +4,8 @@ const userDao = require('../dao/users-dao');
 const fs = require('fs');
 const imageDir = process.cwd() + process.env.IMAGE_DIR;
 const {promisePutNotice} = require('./ctrls');
+const User = require('../models/user');
+const handleRes = require('./handle-res');
 
 /**
  * @swagger
@@ -21,7 +23,7 @@ const {promisePutNotice} = require('./ctrls');
  *        required: true
  *        type: string
  *      - in: formData
- *        name: file
+ *        ngitame: file
  *        type: file
  *        description: upload image
  *    responses:

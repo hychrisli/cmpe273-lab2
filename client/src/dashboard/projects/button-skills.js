@@ -12,7 +12,7 @@ class SkillsButton extends Component{
 
   handleClick =  () => {
     console.log(this.props.record);
-    this.props.push('/proj-skills?filter={"project_id"%3A"'+ this.props.record.id +'"}&order=DESC&page=1&perPage=10&sort=id');
+    this.props.push('/proj-skills?filter={"projectId"%3A"'+ this.props.record.id +'"}&order=DESC&page=1&perPage=10&sort=id');
   };
 
   render() {

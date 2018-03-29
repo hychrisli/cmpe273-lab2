@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const projDao = require('../dao/projs-dao');
 const projSkillDao = require('../dao/proj-skills-dao');
-const projFilesDao = require('../dao/proj-files-dao');
 const BidDao = require('../dao/bids-dao');
 const {promiseGetResponse, promisePostResponse} = require('./ctrls');
 const Project = require('../models/project');
+const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
 
 /**
@@ -49,86 +49,60 @@ router.get('/', (req, res) => {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: project_id
+ *      - name: projectId
  *        description: project ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *    responses:
  *      200:
  *        description: a project
  */
 router.get('/:projectId', function (req, res, next) {
-  const project_id = req.params.projectId;
+  const projectId = req.params.projectId;
 
-  if (project_id !== undefined) {
-    const projPromise = projDao.retrieve(Number(project_id));
-    const skillPromise = projSkillDao.retrieve({project_id});
-    const filesPromise = projFilesDao.retrieve({project_id});
-    const bidsPromise = BidDao.countBids({project_id});
-    const avgPricePromise = BidDao.avgBidPrice('bid_price', {project_id});
+  if (projectId !== undefined) {
+    // const filesPromise = projFilesDao.retrieve({project_id});
+    // const bidsPromise = BidDao.countBids({project_id});
+    // const avgPricePromise = BidDao.avgBidPrice('bid_price', {project_id});
 
-    Promise.all([projPromise, skillPromise, filesPromise, bidsPromise, avgPricePromise])
+    Promise.all([
+      Project.findOne({_id: projectId}),
+      ProjectSkill.find({projectId}),
+      //filesPromise,
+      //bidsPromise,
+      //avgPricePromise
+    ])
       .then(results => {
-        const projs = results[0];
+        let project = results[0];
         const skills = results[1];
-        const files = results[2];
-        const cnts = results[3];
-        const avgs = results[4];
+        //const files = results[2];
+        //const cnts = results[3];
+        //const avgs = results[4];
 
-        if ( projs.length < 1)
-          res.status(404).send("Not Found");
-        else{
+        let skillSet = [];
+        for (let i = 0; i < skills.length; i++)
+          skillSet.push(skills[i].skillId);
+        console.log(skillSet);
+        /*          let fileSet = [];
+                  for ( let i = 0; i < files.length; i++ )
+                    fileSet.push(files[i].id);*/
 
-          let skillSet = [];
-          for ( let i = 0; i < skills.length; i++)
-            skillSet.push(skills[i].skill_id);
+        const projStr = JSON.stringify(project);
+        let proj = JSON.parse(projStr);
+        proj.skills = skillSet;
 
-          let fileSet = [];
-          for ( let i = 0; i < files.length; i++ )
-            fileSet.push(files[i].id);
+        /*proj['files'] = fileSet;
+        proj['bids'] = cnts[0].cnt;
+        proj['avg_price'] = avgs[0].avg_price;*/
+        handleRes.sendDoc(res, proj);
 
-          let proj = projs[0];
-          res.set('X-Total-Count', proj.length);
-          res.set('Access-Control-Expose-Headers', 'X-Total-Count');
-          proj['skills'] = skillSet;
-          proj['files'] = fileSet;
-          proj['bids'] = cnts[0].cnt;
-          proj['avg_price'] = avgs[0].avg_price;
-          res.status(200).send(JSON.stringify(proj));
-        }
-
-    }).catch(err => {
-      console.log(error);
-      res.status(500).send(err);
+      }).catch(err => {
+      handleRes.sendNotFound(res, err);
     })
 
-/*    skillPromise.then(skills => {
-
-      let skillSet = [];
-      for (let i = 0; i < skills.length; i++)
-        skillSet.push(skills[i].skill_id);
-      projPromise.then(projs => {
-        if (projs.length < 1) {
-          res.status(400).send("Not Found");
-        } else {
-          let proj = projs[0];
-          res.set('X-Total-Count', proj.length);
-          res.set('Access-Control-Expose-Headers', 'X-Total-Count');
-          proj['skills'] = skillSet;
-          res.status(200).send(JSON.stringify(proj));
-        }
-      }).catch((err) => {
-        console.log(err);
-        res.status(500).send(err);
-
-      }).catch((err) => {
-        console.log(err);
-        res.status(500).send(err);
-      });
-    });*/
   } else {
-    res.status(400).send("Bad Request");
+    handleRes.sendBadRequest(res, "Invalid Project Id")
   }
 });
 
@@ -233,8 +207,8 @@ router.post('/', (req, res) => {
 
 router.put('/:project_id', (req, res) => {
   console.log(req.params.project_id);
-  const date =  new Date(req.body.start_date);
-  req.body.start_date = date.toISOString().slice(0,10);
+  const date = new Date(req.body.start_date);
+  req.body.start_date = date.toISOString().slice(0, 10);
   delete req.body['skills'];
   delete req.body['files'];
   delete req.body['bids'];
