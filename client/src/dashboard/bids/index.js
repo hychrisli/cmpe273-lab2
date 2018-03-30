@@ -6,7 +6,7 @@ import HireButton from './button-hire'
 
 const BidFilter = (props) => (
   <Filter {...props}>
-    <TextInput label={"Bidder ID"} source={"user_id"}/>
+    <TextInput label={"Bidder ID"} source={"userId"}/>
   </Filter>
 );
 
@@ -14,15 +14,15 @@ export const BidList = (props) => (
   <List title="Bids" {...props} filters={<BidFilter/>}>
     <Datagrid>
       <TextField source="id"/>
-      <ReferenceField label={"Project"} source="project_id" reference={"projects"} linkType="show">
+      <ReferenceField label={"Project"} source="projectId" reference={"projects"} linkType="show">
         <TextField source={"title"}/>
       </ReferenceField>
-      <ReferenceField label={"Bidder"} source="user_id" reference={"users"} linkType="show">
+      <ReferenceField label={"Bidder"} source="userId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
-      <TextField source={"is_active"}/>
-      <TextField source={"bid_price"}/>
-      <TextField source={"bid_days"}/>
+      <TextField source={"isActive"}/>
+      <TextField source={"bidPrice"}/>
+      <TextField source={"bidDays"}/>
       <ShowButton/>
       <HireButton/>
       <DelButton/>
@@ -38,12 +38,14 @@ export const BidShow = (props) => (
   <Show {...props} title={<BidTitle/>} >
     <SimpleShowLayout>
       <TextField source="id"/>
-      <ReferenceField label={"Project"} source="project_id" reference={"projects"} linkType="show">
+      <ReferenceField label={"Project"} source="projectId" reference={"projects"} linkType="show">
         <TextField source={"title"}/>
       </ReferenceField>
-      <TextField label={"Bidder"} source={"username"}/>
-      <TextField source={"bid_price"}/>
-      <TextField source={"bid_days"}/>
+      <ReferenceField label={"Bidder"} source="userId" reference={"users"} linkType="show">
+        <TextField source={"username"}/>
+      </ReferenceField>
+      <TextField source={"bidPrice"}/>
+      <TextField source={"bidDays"}/>
     </SimpleShowLayout>
   </Show>
 );

@@ -7,7 +7,7 @@ const BidSchema = new Schema({
   employerId: {type: String, required: true},
   bidPrice: {type: Number, required: true},
   bidDays: {type: Number, required: true},
-  isActive: {type: Boolean, default: false}
+  isActive: {type: Boolean, default: true}
 });
 
 BidSchema.index({userId: 1, projectId: 1}, {unique: true});

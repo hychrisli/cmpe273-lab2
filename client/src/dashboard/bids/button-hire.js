@@ -24,7 +24,7 @@ class HireButton extends Component{
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({'chosen_bid': record.id})
+      body: JSON.stringify({'chosenBid': record.id})
     })
       .then(() => {
         showNotification('Hired!');
@@ -45,7 +45,7 @@ class HireButton extends Component{
       }
     } = this.props;
 
-    const isDisabled = !(record.is_active === 'true' && token.id === record.employer_id);
+    const isDisabled = !(record.isActive === 'true' && token.id === record.employerId);
     return <FlatButton label={"Hire"} disabled={isDisabled} onClick={this.handleClick}/>
   }
 }

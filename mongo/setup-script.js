@@ -151,6 +151,7 @@ db.Bid.insert([
     employerId: db.User.findOne({username:'abc'})._id.str,
     bidPrice: 600,
     bidDays: 80,
+    isActive: true,
   },
   {
     userId: db.User.findOne({username:'abc'})._id.str,
@@ -158,5 +159,6 @@ db.Bid.insert([
     employerId: db.User.findOne({username:'xyz'})._id.str,
     bidPrice: 350,
     bidDays: 60,
+    isActive: true
   }
 ]);
