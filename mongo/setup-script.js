@@ -139,3 +139,24 @@ db.ProjectSkill.insert([
     skillId: db.Skill.findOne({skillName:'GCP'})._id.str,
   }
 ]);
+
+
+// Bid
+db.Bid.drop();
+db.createCollection('Bid');
+db.Bid.insert([
+  {
+    userId: db.User.findOne({username:'xyz'})._id.str,
+    projectId: db.Project.findOne({title:'project 3'})._id.str,
+    employerId: db.User.findOne({username:'abc'})._id.str,
+    bidPrice: 600,
+    bidDays: 80,
+  },
+  {
+    userId: db.User.findOne({username:'abc'})._id.str,
+    projectId: db.Project.findOne({title:'project 2'})._id.str,
+    employerId: db.User.findOne({username:'xyz'})._id.str,
+    bidPrice: 350,
+    bidDays: 60,
+  }
+]);

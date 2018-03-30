@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const BidDao = require('../dao/bids-dao');
-const {promiseGetResponse, promisePostResponse, promiseGetOneResponse, promiseDeleteNotice} = require('./ctrls');
+const Bid = require('../models/bid');
+const handleRes = require('./handle-res');
+
 
 /**
  * @swagger
@@ -13,7 +14,7 @@ const {promiseGetResponse, promisePostResponse, promiseGetOneResponse, promiseDe
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: username
+ *      - name: userId
  *        in : query
  *        required: false
  *        type: string
@@ -24,19 +25,19 @@ const {promiseGetResponse, promisePostResponse, promiseGetOneResponse, promiseDe
  */
 router.get('/', (req, res) => {
 
-  const user_id = req.query.user_id;
+  const userId = req.query.userId;
   let filter = {};
-  if (user_id !== undefined){
-    console.log(user_id);
-    filter['user_id'] = user_id;
-  }
+  if (userId !== undefined) filter.userId = userId;
 
-  promiseGetResponse(BidDao.retrieveAll(filter), res, 200);
+  Bid.find(filter, (err, docs) => {
+    if (err) handleRes.sendNotFound(res, err);
+    else handleRes.sendArray(res, docs);
+  });
 });
 
 /**
  * @swagger
- * /bids/{bid_id}:
+ * /bids/{bidId}:
  *  get:
  *    description: retrieve a bid
  *    tags:
@@ -44,21 +45,23 @@ router.get('/', (req, res) => {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: bid_id
+ *      - name: bidId
  *        description: bid ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *    responses:
  *      200:
  *        description: a bid
  */
-router.get('/:bid_id', function (req, res, next) {
-  const bid_id = req.params.bid_id;
-  if ( bid_id !== undefined )
-    promiseGetOneResponse(BidDao.retrieveBid(Number(bid_id)), res, 200);
+router.get('/:bidId', function (req, res, next) {
+  const bidId = req.params.bidId;
+  if ( bidId === undefined ) handleRes.sendBadRequest(res, "Invalid Bid GET Request");
   else
-    res.status(400).send("Invalid Bid GET Request");
+    Bid.findOne({_id: bidId}, (err, doc) => {
+      if (err || doc === null) handleRes.sendNotFound(res, err);
+      else handleRes.sendDoc(res, doc);
+    });
 });
 
 /**
@@ -71,27 +74,27 @@ router.get('/:bid_id', function (req, res, next) {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: user_id
+ *      - name: userId
  *        description: user to bid the project
  *        in: formData
  *        required: true
- *        type: number
- *      - name: project_id
+ *        type: string
+ *      - name: projectId
  *        description: Id of the project
  *        in: formData
  *        required: true
- *        type: number
- *      - name: employer_id
+ *        type: string
+ *      - name: employerId
  *        description: Id of the employer
  *        in: formData
  *        required: true
- *        type: number
- *      - name: bid_price
+ *        type: string
+ *      - name: bidPrice
  *        description: bid price for the project
  *        in: formData
  *        required: false
  *        type: number
- *      - name: bid_days
+ *      - name: bidDays
  *        description: bid days for the project
  *        in: formData
  *        required: false
@@ -101,13 +104,16 @@ router.get('/:bid_id', function (req, res, next) {
  *        description: bid created
  */
 router.post('/', (req, res) => {
-  console.log(req.body);
-  promisePostResponse(BidDao.insertBid(req.body), req, res, 201);
+  const bid = new Bid(req.body);
+  bid.save((err) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendCreated(res);
+  })
 });
 
 /**
  * @swagger
- * /bids/{bid_id}:
+ * /bids/{bidId}:
  *  delete:
  *    description: delete a bid
  *    tags:
@@ -115,21 +121,23 @@ router.post('/', (req, res) => {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: bid_id
+ *      - name: bidId
  *        description: bid ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *    responses:
  *      200:
  *        description: a bid
  */
-router.delete('/:bid_id', function (req, res) {
-  const bid_id = req.params.bid_id;
-  if ( bid_id !== undefined )
-    promiseDeleteNotice(BidDao.deleteBid(Number(bid_id)), "Delete Success", res, 200);
+router.delete('/:bidId', function (req, res) {
+  const bidId = req.params.bidId;
+  if ( bidId === undefined ) handleRes.sendBadRequest(res, "Invalid Bid Delete Request");
   else
-    res.status(400).send("Invalid Bid Delete Request");
+    Bid.remove({_id: bidId}, (err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendOK(res);
+    });
 });
 
 

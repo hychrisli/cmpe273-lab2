@@ -149,22 +149,10 @@ router.post('/login', function (req, res, next) {
   User.findOne({username}, (err, doc) => {
     if ( err ) handleRes.sendInternalSystemError(res, err);
     else if ( doc === null)
-      res.status(404).send({success: false, message: "No Such User"});
+      handleRes.sendNotFound(res, "No SUch User");
     else if ( !bcrypt.compareSync(req.body.password, doc.password ))
-      res.status(401).send({success: false, message: "Wrong Password"});
-    else {
-      const token = jwt.sign({user: doc}, key);
-      const user = {
-        id: doc._id,
-        username: doc.username,
-        email: doc.email,
-        firstName: doc.firstName,
-        lastName: doc.lastName,
-        aboutMe: doc.aboutMe,
-        jwt: 'bearer ' + token
-      };
-      res.send(user);
-    }
+      handleRes.sendBadRequest(res, "Wrong Password");
+    else handleRes.sendDoc(res, resUser(doc))
   });
 });
 
@@ -225,10 +213,25 @@ router.put('/:username', function (req, res, next) {
     else {
       User.findOne({username}, (err, user) => {
         if (err) handleRes.sendNotFound(res, err);
-        else handleRes.sendDoc(res, user);
+        else handleRes.sendDoc(res, resUser(user))
       })
     }
   })
 });
+
+
+const resUser = (doc) => {
+  const token = jwt.sign({user: doc}, key);
+  return {
+    id: doc._id,
+    username: doc.username,
+    email: doc.email,
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    aboutMe: doc.aboutMe,
+    jwt: 'bearer ' + token
+  };
+};
+
 
 module.exports = router;

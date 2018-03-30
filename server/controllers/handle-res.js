@@ -14,6 +14,11 @@ exports.sendArray = (res, array, total=0) => {
   res.send(jsonStr);
 };
 
+exports.sendOK = (res) => {
+  res = setObjectHeader(res);
+  res.send({success: true, message:"OK"})
+};
+
 exports.sendDoc = (res, doc) => {
   res = setObjectHeader(res);
   let jsonStr = JSON.stringify(doc);
