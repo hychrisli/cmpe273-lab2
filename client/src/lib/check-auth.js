@@ -46,7 +46,8 @@ export function checkWidgetAuthorization({dispatch, getState}){
 }
 
 function checkAuthorization(dispatch){
-  const storedToken = localStorage.getItem('token');
+  const storedToken = localStorage.getItem('t' +
+    'oken');
 
   if ( storedToken ) {
     const token = JSON.parse(storedToken);

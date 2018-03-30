@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const userDao = require('../dao/users-dao');
 const fs = require('fs');
 const imageDir = process.cwd() + process.env.IMAGE_DIR;
-const {promisePutNotice} = require('./ctrls');
 const User = require('../models/user');
 const handleRes = require('./handle-res');
 
@@ -23,28 +21,36 @@ const handleRes = require('./handle-res');
  *        required: true
  *        type: string
  *      - in: formData
- *        ngitame: file
+ *        name: file
  *        type: file
  *        description: upload image
  *    responses:
  *      200:
  *        description: upload success
  */
-router.post('/:username', (req, res) =>{
+router.post('/:username', (req, res) => {
   const username = req.params.username;
 
-  if ( !req.files )
-    return res.status(400).send('No files were uploaded');
+  if (!req.files) handleRes.sendBadRequest(res, 'No files were uploaded');
 
   let image = req.files.file;
   let imageName = username + '_' + image.name;
 
-  image.mv( imageDir + '/' + imageName, (err) => {
-    if ( err )
-      return res.status(500).send(err);
-    promisePutNotice(userDao.update(req.params.username,
-      {image: imageName, image_url: 'http://localhost:5000/api/images/' + username}),
-      'Image uploaded!', res, 200);
+  image.mv(imageDir + '/' + imageName, (err) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else {
+      User.update({username},
+        {
+          $set:
+            {
+              image: imageName,
+              image_url: 'http://localhost:5000/api/images/' + username
+            }
+        }, (err) => {
+          if (err) handleRes.sendInternalSystemError(res, err);
+          else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"})
+        })
+    }
   })
 });
 
@@ -67,23 +73,18 @@ router.post('/:username', (req, res) =>{
  *      200:
  *        description: download success
  */
-router.get('/:username', (req, res)=> {
+router.get('/:username', (req, res) => {
   const username = req.params.username;
 
-  const promise = userDao.retrieveByUserName(username);
-  promise.then((val)=>{
-    if (val.length < 1)
-      res.status(400).send("No such user");
+  User.findOne({username}, (err, user) => {
+    if (err) handleRes.sendNotFound(res, err);
     else {
-      const imageFile = imageDir + '/' + val[0].image;
+      const imageFile = imageDir + '/' + user.image;
       if (fs.existsSync(imageFile))
         res.sendFile(imageFile);
       else
-        res.status(400).send("No such file");
+        handleRes.sendNotFound(res, new Error("No such file"));
     }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send(err);
   });
 });
 

@@ -154,7 +154,16 @@ router.post('/login', function (req, res, next) {
       res.status(401).send({success: false, message: "Wrong Password"});
     else {
       const token = jwt.sign({user: doc}, key);
-      res.send({success: true, token: 'bearer ' + token});
+      const user = {
+        id: doc._id,
+        username: doc.username,
+        email: doc.email,
+        firstName: doc.firstName,
+        lastName: doc.lastName,
+        aboutMe: doc.aboutMe,
+        jwt: 'bearer ' + token
+      };
+      res.send(user);
     }
   });
 });
@@ -215,8 +224,8 @@ router.put('/:username', function (req, res, next) {
     if (err) handleRes.sendInternalSystemError(res);
     else {
       User.findOne({username}, (err, user) => {
-        if (err) handleRes.sendNotFound(res);
-        else handleRes.sendDoc(user);
+        if (err) handleRes.sendNotFound(res, err);
+        else handleRes.sendDoc(res, user);
       })
     }
   })

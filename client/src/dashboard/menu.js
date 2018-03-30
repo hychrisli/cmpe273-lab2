@@ -45,15 +45,15 @@ const Menu = ({onMenuTap, translate, logout}) => (
       primaryText={"Profile"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/user-skills?filter={"user_id"%3A"'+ getUserId() +'"}'}
+      to={'/user-skills?filter={"userId"%3A"'+ getUserId() +'"}'}
       primaryText={"My Skills"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/projects?filter={"employer_id"%3A"'+ getUserId()+'"}'}
+      to={'/projects?filter={"employerId"%3A"'+ getUserId()+'"}'}
       primaryText={"My Projects"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/bids?filter={"user_id"%3A"'+ getUserId()+'"}'}
+      to={'/bids?filter={"userId"%3A"'+ getUserId()+'"}'}
       primaryText={"My Bids"}
       onClick={onMenuTap}/>
     {logout}
