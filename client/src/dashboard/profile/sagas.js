@@ -31,15 +31,15 @@ function* pUpdFlow(action){
     console.log(action);
     const {values} = action;
     const username = values.username;
-    let body = {};
+/*    let body = {};
     if (values.email !== undefined) body['email'] = values.email;
     if (values.password !== undefined) body['password'] = values.password;
     if (values.firstName !== undefined) body['first_name'] = values.firstName;
     if (values.lastName !== undefined) body['last_name'] = values.lastName;
-    if (values.aboutMe !== undefined) body['about_me'] = values.aboutMe;
+    if (values.aboutMe !== undefined) body['about_me'] = values.aboutMe;*/
 
-    console.log(body);
-    const token = yield call(pUpdApi, username, body);
+    console.log(values);
+    const token = yield call(pUpdApi, username, values);
     localStorage.setItem('token', JSON.stringify(token));
     yield put(setClient(token));
     yield put({type: PROFILE_UPDATE_SUCCESS});

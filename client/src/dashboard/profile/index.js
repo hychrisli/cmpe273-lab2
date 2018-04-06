@@ -89,18 +89,18 @@ class Profile extends Component {
         token: {
           username,
           email,
-          first_name,
-          last_name,
-          about_me
+          firstName,
+          lastName,
+          aboutMe
         }
       }
     } = this.props;
 
     this.props.initialize({
-      email: email,
-      firstName: first_name,
-      lastName: last_name,
-      aboutMe: about_me
+      email,
+      firstName,
+      lastName,
+      aboutMe
     });
 
     this.setState({username,

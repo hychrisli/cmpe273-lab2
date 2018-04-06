@@ -21,14 +21,14 @@ function bidApi(body) {
 function* bidFlow(action) {
   try{
     const {values} = action;
-    const body = {
+/*    const body = {
       user_id: values.userId,
       project_id: values.projectId,
       employer_id: values.employerId,
       bid_price: values.bidPrice,
       bid_days: values.bidDays,
-    };
-    yield call(bidApi,body);
+    };*/
+    yield call(bidApi,values);
     yield put({type: BID_SUCCESS});
   } catch (error) {
     console.log(error);

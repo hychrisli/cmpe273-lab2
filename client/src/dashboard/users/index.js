@@ -8,7 +8,7 @@ export const UserList = (props) => (
     <Datagrid>
       <TextField source={"id"}/>
       <TextField source="username"/>
-      <ImageField source="image_url"/>
+      <ImageField source="imageUrl"/>
       <ShowButton/>
     </Datagrid>
   </List>
@@ -21,10 +21,10 @@ const UserTitle = ({record}) => {
 export const UserShow = (props) => (
   <Show {...props} title={<UserTitle/>} >
     <SimpleShowLayout>
-      <ImageField source="image_url"/>
-      <TextField source={"first_name"}/>
-      <TextField source={"last_name"}/>
-      <TextField source={"about_me"}/>
+      <ImageField source="imageUrl"/>
+      <TextField source={"firstName"}/>
+      <TextField source={"lastName"}/>
+      <TextField source={"aboutMe"}/>
     </SimpleShowLayout>
   </Show>
 );

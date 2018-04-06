@@ -28,7 +28,7 @@ class BidCreate extends Component {
     this.props.initialize({
       userId: client.token.id,
       projectId: project.id,
-      employerId: project.employer_id
+      employerId: project.employerId
     });
   }
 

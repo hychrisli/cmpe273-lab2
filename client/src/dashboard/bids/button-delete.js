@@ -25,13 +25,13 @@ class DelButton extends Component{
 
   componentDidMount(){
     const{record} = this.props;
-    const url = `${process.env.REACT_APP_API_URL}/projects/` + record.project_id;
+    const url = `${process.env.REACT_APP_API_URL}/projects/` + record.projectId;
     fetch(url, {
       method: 'GET',
     })
       .then(response => response.json())
       .then(json=>{
-        if ( json.chosen_bid === record.id)
+        if ( json.chosenBid === record.id)
           this.setState({isChosen:true})
       })
       .catch( e => {
@@ -68,7 +68,7 @@ class DelButton extends Component{
       }
     } = this.props;
 
-    const isDisabled = !(record.is_active === 'true' && token.id === record.user_id);
+    const isDisabled = !(record.isActive === 'true' && token.id === record.userId);
     return <FlatButton label={"Delete"} disabled={ isDisabled } onClick={this.handleClick}/>
   }
 }

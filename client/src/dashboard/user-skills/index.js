@@ -15,7 +15,7 @@ const cardActionStyle = {
 
 const UserFilter = (props) => (
   <Filter {...props}>
-    <TextInput label={"User ID"} source={"user_id"}/>
+    <TextInput label={"User ID"} source={"userId"}/>
   </Filter>
 );
 
@@ -23,8 +23,8 @@ export const UserSkillList = (props) => (
   <List title="My Skills" filters={<UserFilter/>} {...props} >
     <Datagrid>
       <TextField source="id"/>
-      <ReferenceField label={"Skill"} source="skill_id" reference={"skills"} linkType="show">
-        <TextField source={"skill_name"}/>
+      <ReferenceField label={"Skill"} source="skillId" reference={"skills"} linkType="show">
+        <TextField source={"skillName"}/>
       </ReferenceField>
     </Datagrid>
   </List>
@@ -45,9 +45,9 @@ const UserSkillCreate = (props) => {
   else {
     return (
       <Create {...props} title={"Add Skill for " + username}>
-        <SimpleForm redirect={'/user-skills?filter={"user_id"%3A"'+id+'"}'} submitOnEnter={false}>
-          <TextInput source="user_id" defaultValue={id}/>
-          <SelectArrayInput source="skill_id" choices={skillChoices} optionText="skill_name" optionValue="id" />
+        <SimpleForm redirect={'/user-skills?filter={"userId"%3A"'+id+'"}'} submitOnEnter={false}>
+          <TextInput source="userId" defaultValue={id}/>
+          <SelectArrayInput source="skillId" choices={skillChoices} optionText="skillName" optionValue="id" />
         </SimpleForm>
       </Create> )
   }

@@ -17,7 +17,7 @@ import {getUsername} from '../lib/get-info'
 
 const ProjFilter = (props) => (
   <Filter {...props}>
-    <TextInput label={"Employer ID"} source={"employer_id"}/>
+    <TextInput label={"Employer ID"} source={"employerId"}/>
   </Filter>
 );
 
@@ -26,7 +26,7 @@ export const ProjList = (props) => (
     <Datagrid>
       <TextField source="title"/>
       <TextField source="description"/>
-      <ReferenceField label={"Employer"} source="employer_id" reference={"users"} linkType="show">
+      <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
       <BidButton/>
@@ -62,13 +62,13 @@ export const ProjEdit = (props) => (
       <DateInput source="start_date"/>
       <ReferenceArrayField label={"skills"} reference={"skills"} source={"skills"}>
         <SingleFieldList>
-          <ChipField source={"skill_name"}/>
+          <ChipField source={"skillName"}/>
         </SingleFieldList>
       </ReferenceArrayField>
       <AddSkillButton/>
       <ReferenceArrayField label={"files"} reference={"proj-files"} source={"files"}>
         <SingleFieldList>
-          <ChipField source={"file_name"}/>
+          <ChipField source={"fileName"}/>
         </SingleFieldList>
       </ReferenceArrayField>
       <UploadButton/>
@@ -82,9 +82,9 @@ export const ProjCreate = (props) => (
       <TextInput source="title"/>
       <TextInput source="description"/>
       <TextInput source="employer" defaultValue={getUsername()}/>
-      <NumberInput source="min_budget"/>
-      <NumberInput source="max_budget"/>
-      <DateInput source="start_date"/>
+      <NumberInput source="minBudget"/>
+      <NumberInput source="maxBudget"/>
+      <DateInput source="startDate"/>
     </SimpleForm>
   </Create>
 );
@@ -110,18 +110,18 @@ export const ProjShow = (props) => {
     <SimpleShowLayout>
       <TextField source={"title"}/>
       <TextField source={"description"}/>
-      <ReferenceField label={"Employer"} source="employer_id" reference={"users"} linkType="show">
+      <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
-      <TextField source={"min_budget"}/>
-      <TextField source={"max_budget"}/>
-      <DateField source={"start_date"}/>
-      <TextField source={"chosen_bid"}/>
+      <TextField source={"minBudget"}/>
+      <TextField source={"maxBudget"}/>
+      <DateField source={"startDate"}/>
+      <TextField source={"chosenBid"}/>
       <TextField source={"bids"}  label={"# of Bids"}/>
-      <TextField source={"avg_price"}  label={"Avg. Bid Price"}/>
+      <TextField source={"avgPrice"}  label={"Avg. Bid Price"}/>
       <ReferenceArrayField label={"skills"} reference={"skills"} source={"skills"}>
         <SingleFieldList>
-          <ChipField source={"skill_name"}/>
+          <ChipField source={"skillName"}/>
         </SingleFieldList>
       </ReferenceArrayField>
       <ListFilesButton {...props}/>
