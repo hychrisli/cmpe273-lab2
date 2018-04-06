@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {jsonServerRestClient, Admin, Resource} from 'admin-on-rest';
+import {jsonServerRestClient, Admin, Resource, fetchUtils} from 'admin-on-rest';
 import PropTypes from 'prop-types'
 
 import customRoutes from './routes';
@@ -40,6 +40,17 @@ class Dashboard extends Component {
     })
   };
 
+  httpClient = (url, options = {}) => {
+    if (!options.headers) {
+      options.headers = new Headers({ Accept: 'application/json' });
+    }
+    // add your own headers here
+    options.headers.set('Authorization', this.props.client.token.jwt);
+    return fetchUtils.fetchJson(url, options);
+  };
+  restClient = jsonServerRestClient(`${process.env.REACT_APP_API_URL}`, this.httpClient);
+
+
   render() {
 
     console.log("Admin initial State");
@@ -55,7 +66,7 @@ class Dashboard extends Component {
           initialState={{'client': this.props.client}}
           title={"Freelancer"}
           customRoutes={customRoutes}
-          restClient={jsonServerRestClient(`${process.env.REACT_APP_API_URL}`)}>
+          restClient={this.restClient}>
           <Resource name='projects'
                     list={ProjList}
                     show={ProjShow}

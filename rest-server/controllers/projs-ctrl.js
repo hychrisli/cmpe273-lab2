@@ -7,6 +7,8 @@ const {promiseGetResponse, promisePostResponse} = require('./ctrls');
 const Project = require('../models/project');
 const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
+const passport = require('passport');
+require('../auth/passport')(passport);
 
 /**
  * @swagger
@@ -27,7 +29,7 @@ const handleRes = require('./handle-res');
  *      200:
  *        description: projects
  */
-router.get('/', (req, res) => {
+router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   const employerId = req.query.employerId;
   let filter = {};
   if (employerId !== undefined) filter.employerId = employerId;
@@ -58,7 +60,7 @@ router.get('/', (req, res) => {
  *      200:
  *        description: a project
  */
-router.get('/:projectId', function (req, res, next) {
+router.get('/:projectId', passport.authenticate('jwt', {session: false}), function (req, res, next) {
   const projectId = req.params.projectId;
 
   if (projectId !== undefined) {
@@ -150,7 +152,7 @@ router.get('/:projectId', function (req, res, next) {
  *      201:
  *        description: project created
  */
-router.post('/', (req, res) => {
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   req.body.startDate = new Date(req.body.startDate);
   const project = new Project(req.body);
   project.save((err) => {
@@ -205,7 +207,7 @@ router.post('/', (req, res) => {
  *        description: project updated
  */
 
-router.put('/:project_id', (req, res) => {
+router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
   console.log(req.params.project_id);
   const date = new Date(req.body.start_date);
   req.body.start_date = date.toISOString().slice(0, 10);
