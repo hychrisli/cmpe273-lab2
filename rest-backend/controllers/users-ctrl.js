@@ -8,8 +8,6 @@ const {key} = require('../auth/constants');
 const User = require('../models/user');
 const handleRes = require('./handle-res');
 
-const kafkaClient = require('../kafka-client/client');
-
 /**
  * @swagger
  * /users:
@@ -25,12 +23,8 @@ const kafkaClient = require('../kafka-client/client');
  *      200:
  *        description: users
  */
-router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) => {
+router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 //router.get('/', (req, res) => {
-  kafkaClient.make_request("testing", req.body, (err, res) => {
-    if ( err ) console.log(err);
-    else console.log(res);
-  });
   User.find({}, (err, docs) => {
     if (err) handleRes.sendInternalSystemError(res, err);
     else handleRes.sendArray(res, docs);
