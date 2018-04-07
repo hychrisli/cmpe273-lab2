@@ -1,11 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const skillDao = require('../dao/skills-dao');
-const {
-  promiseGetResponse,
-  promisePostResponse,
-  promiseGetOneResponse,
-  promiseGetPagedResponse} = require('./ctrls');
 const Skill = require('../models/skill');
 const {paginate} = require('./lib');
 const handleRes = require('./handle-res');

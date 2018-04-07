@@ -1,10 +1,9 @@
-function handle_request(msg, callback){
+const User = require('../models/user');
 
-  var res = {};
-  console.log("In handle request:"+ JSON.stringify(msg));
-  res.code = 200;
-  res.value = "OK";
-  callback(null, res);
-}
+exports.handleGetUsers = (req, cb) => {
+  User.find({}, (err, docs) => {
+    if (err) cb(err);
+    else cb(null, docs);
+  });
 
-exports.handle_request = handle_request;
+};

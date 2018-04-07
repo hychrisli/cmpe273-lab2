@@ -9,6 +9,10 @@ const User = require('../models/user');
 const handleRes = require('./handle-res');
 
 const kafkaClient = require('../kafka-client/client');
+const {
+  FLC_TPC_GET_USERS_RQ,
+  FLC_TPC_GET_USERS_RS
+} = require('../kafka-client/topics');
 
 /**
  * @swagger
@@ -27,14 +31,10 @@ const kafkaClient = require('../kafka-client/client');
  */
 router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) => {
 //router.get('/', (req, res) => {
-  kafkaClient.make_request("testing", req.body, (err, res) => {
-    if ( err ) console.log(err);
-    else console.log(res);
-  });
-  User.find({}, (err, docs) => {
+  kafkaClient.make_request(FLC_TPC_GET_USERS_RQ, req.body, FLC_TPC_GET_USERS_RS, (err, docs) => {
     if (err) handleRes.sendInternalSystemError(res, err);
     else handleRes.sendArray(res, docs);
-  })
+  });
 
 });
 
@@ -60,7 +60,7 @@ router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) =
  *      200:
  *        description: a user
  */
-router.get('/:id',(req, res) => {
+router.get('/:id', (req, res) => {
   const id = req.params.id;
   User.findOne({_id: id}, (err, doc) => {
     if (err) handleRes.sendNotFound(res, err);
@@ -144,19 +144,19 @@ router.post('/login', function (req, res, next) {
   const username = req.body.username;
   const password = req.body.password;
 
-  if ( username === undefined || username === null || username === "") {
+  if (username === undefined || username === null || username === "") {
     handleRes.sendBadRequest(res, "Username Not Specified");
     next();
-  } else if ( password === undefined || password === null || password === "") {
+  } else if (password === undefined || password === null || password === "") {
     handleRes.sendBadRequest(res, "Password Not Specified");
     next();
   }
 
   User.findOne({username}, (err, doc) => {
-    if ( err ) handleRes.sendInternalSystemError(res, err);
-    else if ( doc === null)
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else if (doc === null)
       handleRes.sendNotFound(res, "No SUch User");
-    else if ( !bcrypt.compareSync(req.body.password, doc.password ))
+    else if (!bcrypt.compareSync(req.body.password, doc.password))
       handleRes.sendBadRequest(res, "Wrong Password");
     else handleRes.sendDoc(res, resUser(doc))
   });

@@ -1,9 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const projDao = require('../dao/projs-dao');
-const projSkillDao = require('../dao/proj-skills-dao');
-const BidDao = require('../dao/bids-dao');
-const {promiseGetResponse, promisePostResponse} = require('./ctrls');
 const Project = require('../models/project');
 const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
@@ -208,7 +204,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  */
 
 router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
-  console.log(req.params.project_id);
+/*  console.log(req.params.project_id);
   const date = new Date(req.body.start_date);
   req.body.start_date = date.toISOString().slice(0, 10);
   delete req.body['skills'];
@@ -216,7 +212,7 @@ router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req,
   delete req.body['bids'];
   delete req.body['avg_price'];
   console.log(req.body);
-  promisePostResponse(projDao.update(Number(req.params.project_id), req.body), req, res, 200);
+  promisePostResponse(projDao.update(Number(req.params.project_id), req.body), req, res, 200);*/
 });
 
 module.exports = router;

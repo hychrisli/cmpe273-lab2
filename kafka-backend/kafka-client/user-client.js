@@ -1,33 +1,33 @@
-var connection =  new require('./Connection');
-var userSvc = require('../services/user-service');
+const connection = new require('./Connection');
+const userSvc = require('../services/user-service');
 
-var topic_name = 'testing';
-var consumer = connection.getConsumer(topic_name);
-var producer = connection.getProducer();
+const {
+  FLC_TPC_GET_USERS_RQ
+} = require('./topics');
 
+const getUsersConsumer = connection.getConsumer(FLC_TPC_GET_USERS_RQ);
+const producer = connection.getProducer();
 
+getUsersConsumer.on('message', function (message) {
+  console.log('Request Received: ', FLC_TPC_GET_USERS_RQ);
+  const req = JSON.parse(message.value);
+  userSvc.handleGetUsers(req.data, function (err, vals) {
 
-
-console.log('server is running');
-consumer.on('message', function (message) {
-  console.log('message received');
-  console.log(JSON.stringify(message.value));
-  var data = JSON.parse(message.value);
-  userSvc.handle_request(data.data, function (err, res) {
-    console.log('after handle' + res);
-    var payloads = [
-      {
-        topic: data.replyTo,
-        messages: JSON.stringify({
-          correlationId: data.correlationId,
-          data: res
-        }),
-        partition: 0
-      }
-    ];
-    producer.send(payloads, function (err, data) {
-      console.log(data);
-    });
-    return;
+    if (err) console.log(err);
+    else {
+      const payloads = [
+        {
+          topic: req.replyTo,
+          messages: JSON.stringify({
+            correlationId: req.correlationId,
+            data: vals
+          }),
+          partition: 0
+        }
+      ];
+      producer.send(payloads, function (err) {
+        if (err) console.log(err);
+      });
+    }
   });
 });
