@@ -10,7 +10,7 @@ function KafkaRPC() {
   self = this;
   this.connection = conn;
   this.requests = {}; //hash to store request in wait for response
-  this.response_queue = false; //placeholder for the future queue
+  this.response_queue = {}; //placeholder for the future queue
   this.producer = this.connection.getProducer();
 }
 
@@ -41,7 +41,6 @@ KafkaRPC.prototype.makeRequest = function (reqTopic, content, resTopic, callback
 
   //make sure we have a response topic
   self.setupResponseQueue(self.producer, resTopic, function () {
-    console.log('in response');
     //put the request on a topic
 
     var payloads = [
@@ -54,13 +53,9 @@ KafkaRPC.prototype.makeRequest = function (reqTopic, content, resTopic, callback
         partition: 0
       }
     ];
-    console.log('in response1');
-    console.log(self.producer.ready);
     self.producer.send(payloads, function (err, data) {
-      console.log('in response2');
-      if (err)
-        console.log(err);
-      console.log(data);
+      if (err) console.log(err);
+      else console.log('REST Server Produced: ', data);
     });
   });
 };
@@ -68,19 +63,16 @@ KafkaRPC.prototype.makeRequest = function (reqTopic, content, resTopic, callback
 
 KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
   //don't mess around if we have a queue
-  if (this.response_queue) return next();
-
-  console.log('1');
-
+  if (this.response_queue[resTopic] !== undefined) return next();
+  //subscribe to messages
   self = this;
 
-  //subscribe to messages
-  var consumer = self.connection.getConsumer(resTopic);
+  var consumer = new self.connection.getConsumer(resTopic);
   consumer.on('message', function (message) {
-    console.log('Response Message Received: ', resTopic);
-    var data = JSON.parse(message.value);
+    console.log('REST Server Received: ', resTopic);
+    var res = JSON.parse(message.value);
     //get the correlationId
-    var correlationId = data.correlationId;
+    var correlationId = res.correlationId;
     //is it a response to a pending request
     if (correlationId in self.requests) {
       //retrieve the request entry
@@ -90,10 +82,9 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
       //delete the entry from hash
       delete self.requests[correlationId];
       //callback, no err
-      entry.callback(null, data.data);
+      entry.callback(null, res.data);
     }
   });
-  self.response_queue = true;
-  console.log('returning next');
+  self.response_queue[resTopic] = consumer;
   return next();
 };

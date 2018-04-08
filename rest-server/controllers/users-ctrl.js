@@ -11,7 +11,11 @@ const handleRes = require('./handle-res');
 const kafkaClient = require('../kafka-client/client');
 const {
   FLC_TPC_GET_USERS_RQ,
-  FLC_TPC_GET_USERS_RS
+  FLC_TPC_GET_USERS_RS,
+  FLC_TPC_GET_USER_BY_ID_RQ,
+  FLC_TPC_GET_USER_BY_ID_RS,
+  FLC_TPC_POST_USER_RQ,
+  FLC_TPC_POST_USER_RS
 } = require('../kafka-client/topics');
 
 /**
@@ -61,11 +65,14 @@ router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) =
  *        description: a user
  */
 router.get('/:id', (req, res) => {
-  const id = req.params.id;
-  User.findOne({_id: id}, (err, doc) => {
-    if (err) handleRes.sendNotFound(res, err);
-    else handleRes.sendDoc(res, doc);
-  });
+  kafkaClient.make_request(
+    FLC_TPC_GET_USER_BY_ID_RQ,
+    {_id: req.params.id},
+    FLC_TPC_GET_USER_BY_ID_RS,
+    (err, doc) => {
+      if (err) handleRes.sendNotFound(res, err);
+      else handleRes.sendDoc(res, doc);
+    });
 });
 
 
@@ -98,20 +105,17 @@ router.get('/:id', (req, res) => {
  *      201:
  *        description: user created
  */
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
   let form = req.body;
   form.password = bcrypt.hashSync(form.password, 10);
-  const user = new User({
-    username: form.username,
-    password: form.password,
-    email: form.email
-  });
-
-  user.save((err) => {
-    if (err) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendCreated(res);
-  })
-
+  kafkaClient.make_request(
+    FLC_TPC_POST_USER_RQ,
+    form,
+    FLC_TPC_POST_USER_RS,
+    (err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendCreated(res);
+    });
 });
 
 /**

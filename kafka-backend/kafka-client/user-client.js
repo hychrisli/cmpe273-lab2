@@ -1,33 +1,31 @@
-const connection = new require('./Connection');
+const connection = require('./connect');
 const userSvc = require('../services/user-service');
+const handler = require('./handler');
 
 const {
-  FLC_TPC_GET_USERS_RQ
+  FLC_TPC_GET_USERS_RQ,
+  FLC_TPC_GET_USER_BY_ID_RQ,
+  FLC_TPC_POST_USER_RQ
 } = require('./topics');
 
-const getUsersConsumer = connection.getConsumer(FLC_TPC_GET_USERS_RQ);
-const producer = connection.getProducer();
+const consumerGetUsers = new connection.getConsumer(FLC_TPC_GET_USERS_RQ);
+const consumerGetUserById = new  connection.getConsumer(FLC_TPC_GET_USER_BY_ID_RQ);
+const consumerPostUser  = new connection.getConsumer(FLC_TPC_POST_USER_RQ);
 
-getUsersConsumer.on('message', function (message) {
-  console.log('Request Received: ', FLC_TPC_GET_USERS_RQ);
+consumerGetUsers.on('message', function (message) {
+  console.log('Request Received: ', message.topic);
   const req = JSON.parse(message.value);
-  userSvc.handleGetUsers(req.data, function (err, vals) {
+  userSvc.handleGetUsers(req.data, (err, data) => {handler.genericProduce(err, data, req)});
+});
 
-    if (err) console.log(err);
-    else {
-      const payloads = [
-        {
-          topic: req.replyTo,
-          messages: JSON.stringify({
-            correlationId: req.correlationId,
-            data: vals
-          }),
-          partition: 0
-        }
-      ];
-      producer.send(payloads, function (err) {
-        if (err) console.log(err);
-      });
-    }
-  });
+consumerGetUserById.on('message', function (message) {
+  console.log('Request Received: ', message.topic);
+  const req = JSON.parse(message.value);
+  userSvc.handleGetUserById(req.data, (err, data) => {handler.genericProduce(err, data, req)});
+});
+
+consumerPostUser.on('message', function (message) {
+  console.log('Request Received: ', message.topic);
+  const req = JSON.parse(message.value);
+  userSvc.handlePostUser(req.data, (err, data) => {handler.genericProduce(err, data, req)});
 });
