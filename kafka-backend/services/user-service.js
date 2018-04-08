@@ -6,8 +6,8 @@ exports.handleGetUsers = (req, cb) => {
     (err, data) => {handler.genericCallback(err, data, cb)});
 };
 
-exports.handleGetUserById = (req, cb) => {
-  User.findOne({_id: req._id},
+exports.handleGetUser = (filter, cb) => {
+  User.findOne(filter,
     (err, data) => {handler.genericCallback(err, data, cb)});
 };
 
@@ -18,4 +18,20 @@ exports.handlePostUser = (req, cb) => {
     email: req.email
   });
   user.save((err, data) => {handler.genericCallback(err, data, cb)});
+};
+
+
+exports.handleUpdUser = (req, cb) => {
+  const username = req.username;
+  const form = req.form;
+
+  console.log(username);
+  console.log(form);
+
+  User.update({username}, {$set: form}, (err) => {
+    if (err) console.log(err);
+    else {
+      User.findOne({username}, (err, user) => {handler.genericCallback(err, user, cb)});
+    }
+  });
 };
