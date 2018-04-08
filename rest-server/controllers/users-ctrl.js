@@ -9,15 +9,12 @@ const handleRes = require('./handle-res');
 
 const kafkaClient = require('../kafka-client/client');
 const {
-  FLC_TPC_GET_USERS_RQ,
-  FLC_TPC_GET_USERS_RS,
-  FLC_TPC_GET_USER_RQ,
-  FLC_TPC_GET_USER_RS,
-  FLC_TPC_POST_USER_RQ,
-  FLC_TPC_POST_USER_RS,
-  FLC_TPC_UPD_USER_RQ,
-  FLC_TPC_UPD_USER_RS
-} = require('../kafka-client/topics');
+  FLC_TPC_USER,
+  GET_ALL,
+  GET_ONE,
+  POST,
+  PUT
+} = require('../kafka-client/constants');
 
 /**
  * @swagger
@@ -36,9 +33,13 @@ const {
  */
 router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) => {
 //router.get('/', (req, res) => {
-  kafkaClient.make_request(FLC_TPC_GET_USERS_RQ, req.body, FLC_TPC_GET_USERS_RS, (err, docs) => {
-    if (err) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendArray(res, docs);
+  kafkaClient.make_request(
+    FLC_TPC_USER,
+    GET_ALL,
+    {},
+    (err, docs) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, docs);
   });
 
 });
@@ -67,9 +68,9 @@ router.get('/', /*passport.authenticate('jwt', {session: false}), */(req, res) =
  */
 router.get('/:id', (req, res) => {
   kafkaClient.make_request(
-    FLC_TPC_GET_USER_RQ,
+    FLC_TPC_USER,
+    GET_ONE,
     {_id: req.params.id},
-    FLC_TPC_GET_USER_RS,
     (err, doc) => {
       if (err) handleRes.sendNotFound(res, err);
       else handleRes.sendDoc(res, doc);
@@ -110,9 +111,9 @@ router.post('/', function (req, res) {
   let form = req.body;
   form.password = bcrypt.hashSync(form.password, 10);
   kafkaClient.make_request(
-    FLC_TPC_POST_USER_RQ,
+    FLC_TPC_USER,
+    POST,
     form,
-    FLC_TPC_POST_USER_RS,
     (err) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendCreated(res);
@@ -158,9 +159,9 @@ router.post('/login', function (req, res, next) {
   }
 
   kafkaClient.make_request(
-    FLC_TPC_GET_USER_RQ,
+    FLC_TPC_USER,
+    GET_ONE,
     {username},
-    FLC_TPC_GET_USER_RS,
     (err, doc) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else if (doc === null)
@@ -224,9 +225,9 @@ router.put('/:username', function (req, res) {
     form.password = bcrypt.hashSync(form.password, 10);
 
   kafkaClient.make_request(
-    FLC_TPC_UPD_USER_RQ,
+    FLC_TPC_USER,
+    PUT,
     {username, form},
-    FLC_TPC_UPD_USER_RS,
     (err, user) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else if (user === null) handleRes.sendNotFound(res, "Not Found");

@@ -14,7 +14,7 @@ function KafkaRPC() {
   this.producer = this.connection.getProducer();
 }
 
-KafkaRPC.prototype.makeRequest = function (reqTopic, content, resTopic, callback) {
+KafkaRPC.prototype.makeRequest = function (topic, type, data, callback) {
 
   self = this;
   //generate a unique correlation id for this call
@@ -31,24 +31,25 @@ KafkaRPC.prototype.makeRequest = function (reqTopic, content, resTopic, callback
   }, TIMEOUT, correlationId);
 
   //create a request entry to store in a hash
-  var entry = {
+  self.requests[correlationId] = {
     callback: callback,
     timeout: tId //the id for the timeout so we can clear it
   };
 
-  //put the entry in the hash so we can match the response later
-  self.requests[correlationId] = entry;
-
+  console.log(type);
+  const replyTo = topic + '_RS';
   //make sure we have a response topic
-  self.setupResponseQueue(self.producer, resTopic, function () {
+  self.setupResponseQueue(self.producer, replyTo, function () {
     //put the request on a topic
 
     var payloads = [
       {
-        topic: reqTopic, messages: JSON.stringify({
-          correlationId: correlationId,
-          replyTo: resTopic,
-          data: content
+        topic,
+        messages: JSON.stringify({
+          correlationId,
+          replyTo,
+          type,
+          data
         }),
         partition: 0
       }

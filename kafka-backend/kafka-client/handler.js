@@ -1,13 +1,14 @@
 const connection = new require('./connect');
 const producer = connection.getProducer();
 
-produce = (req, data) => {
+exports.genericProduce = (err, data, req) => {
   const payloads = [
     {
       topic: req.replyTo,
       messages: JSON.stringify({
         correlationId: req.correlationId,
-        data: data
+        err,
+        data
       }),
       partition: 0
     }
@@ -16,9 +17,4 @@ produce = (req, data) => {
     if (err) console.log(err);
     else console.log('Response Sent: ', req.replyTo);
   });
-};
-
-exports.genericProduce = (err, data, req) => {
-  if (err) console.log(err);
-  else produce(req, data);
 };

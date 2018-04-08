@@ -1,9 +1,9 @@
 var rpc = new (require('./kafkarpc'))();
 
 //make request to kafka
-function make_request(reqTopic, msg_payload, resTopic, callback){
-    console.log('Making Request: ', reqTopic);
-	rpc.makeRequest(reqTopic, msg_payload, resTopic, function(err, response){
+function make_request(topic, type, msg_payload, callback){
+    console.log('Making Request: ', topic, type);
+	rpc.makeRequest(topic, type, msg_payload, function(err, response){
 
 		if(err)
 			console.error(err);

@@ -12,12 +12,18 @@ exports.handleGetUser = (filter, cb) => {
 };
 
 exports.handlePostUser = (req, cb) => {
-  const user = new User({
-    username: req.username,
-    password: req.password,
-    email: req.email
+  User.findOne( {username: req.username}, (err, user) => {
+    if (err) cb(err);
+    else if ( user === null ) {
+      const user = new User({
+        username: req.username,
+        password: req.password,
+        email: req.email
+      });
+      user.save((err, data) => {handler.genericCallback(err, data, cb)});
+    } else handler.genericCallback(err, user, cb);
   });
-  user.save((err, data) => {handler.genericCallback(err, data, cb)});
+
 };
 
 

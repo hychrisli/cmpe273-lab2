@@ -3,37 +3,37 @@ const userSvc = require('../services/user-service');
 const handler = require('./handler');
 
 const {
-  FLC_TPC_GET_USERS_RQ,
-  FLC_TPC_GET_USER_RQ,
-  FLC_TPC_POST_USER_RQ,
-  FLC_TPC_UPD_USER_RQ
-} = require('./topics');
+  FLC_TPC_USER,
+  GET_ALL,
+  GET_ONE,
+  PUT,
+  POST
+} = require('./constants');
 
-const consumerGetUsers = new connection.getConsumer(FLC_TPC_GET_USERS_RQ);
-const consumerGetUser = new  connection.getConsumer(FLC_TPC_GET_USER_RQ);
-const consumerPostUser  = new connection.getConsumer(FLC_TPC_POST_USER_RQ);
-const consumerUpdUser = new connection.getConsumer(FLC_TPC_UPD_USER_RQ);
+const consumerGetUsers = new connection.getConsumer(FLC_TPC_USER);
 
 consumerGetUsers.on('message', function (message) {
-  console.log('Request Received: ', message.topic);
   const req = JSON.parse(message.value);
-  userSvc.handleGetUsers(req.data, (err, data) => {handler.genericProduce(err, data, req)});
-});
-
-consumerGetUser.on('message', function (message) {
-  console.log('Request Received: ', message.topic);
-  const req = JSON.parse(message.value);
-  userSvc.handleGetUser(req.data, (err, data) => {handler.genericProduce(err, data, req)});
-});
-
-consumerPostUser.on('message', function (message) {
-  console.log('Request Received: ', message.topic);
-  const req = JSON.parse(message.value);
-  userSvc.handlePostUser(req.data, (err, data) => {handler.genericProduce(err, data, req)});
-});
-
-consumerUpdUser.on('message', function (message) {
-  console.log('Request Received: ', message.topic);
-  const req = JSON.parse(message.value);
-  userSvc.handleUpdUser(req.data, (err, data) => {handler.genericProduce(err, data, req)});
+  console.log('Request Received: ', message.topic, req.type);
+  switch (req.type) {
+    case GET_ALL:
+      userSvc.handleGetUsers(req.data, (err, data) => {
+        handler.genericProduce(err, data, req)
+      });
+      break;
+    case GET_ONE:
+      userSvc.handleGetUser(req.data, (err, data) => {
+        handler.genericProduce(err, data, req)
+      });
+      break;
+    case POST:
+      userSvc.handlePostUser(req.data, (err, data) => {
+        handler.genericProduce(err, data, req)
+      });
+      break;
+    case PUT:
+      userSvc.handleUpdUser(req.data, (err, data) => {
+        handler.genericProduce(err, data, req)
+      });
+  }
 });
