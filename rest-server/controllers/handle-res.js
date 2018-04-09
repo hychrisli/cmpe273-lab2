@@ -2,9 +2,13 @@
 
 
 // Success Response
-exports.sendCreated = (res) => {
-  res = setObjectHeader(res);
-  res.status(201).send({success: true, message: "created"});
+exports.sendCreated = (res, data=null) => {
+  if (data === null){
+    res = setObjectHeader(res);
+    res.status(201).send({success: true, message: "created"});
+  }
+  else
+    this.sendDoc(res.status(201), data);
 };
 
 exports.sendArray = (res, array, total=0) => {

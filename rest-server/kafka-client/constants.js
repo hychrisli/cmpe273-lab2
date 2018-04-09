@@ -6,4 +6,5 @@ module.exports = {
   DELETE: 'DELETE',
 
   FLC_TPC_USER: 'FLC_TPC_USER',
+  FLC_TPC_SKILL: 'FLC_TPC_SKILL'
 };

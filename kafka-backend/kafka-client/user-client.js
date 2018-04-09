@@ -1,4 +1,4 @@
-const connection = require('./connect');
+const conn = require('./connect');
 const userSvc = require('../services/user-service');
 const handler = require('./handler');
 
@@ -10,9 +10,9 @@ const {
   POST
 } = require('./constants');
 
-const consumerGetUsers = new connection.getConsumer(FLC_TPC_USER);
+const userConsumer = new conn.getConsumer(FLC_TPC_USER);
 
-consumerGetUsers.on('message', function (message) {
+userConsumer.on('message', function (message) {
   const req = JSON.parse(message.value);
   console.log('Request Received: ', message.topic, req.type);
   switch (req.type) {

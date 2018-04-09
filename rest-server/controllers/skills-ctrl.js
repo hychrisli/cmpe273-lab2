@@ -6,15 +6,11 @@ const handleRes = require('./handle-res');
 
 const kafkaClient = require('../kafka-client/client');
 const {
-  FLC_TPC_GET_SKILLS_RQ,
-  FLC_TPC_GET_SKILLS_RS,
-  FLC_TPC_GET_SKILL_RQ,
-  FLC_TPC_GET_SKILL_RS,
-  FLC_TPC_POST_SKILL_RQ,
-  FLC_TPC_POST_SKILL_RS
+  GET_ALL,
+  GET_ONE,
+  POST,
+  FLC_TPC_SKILL
 } = require('../kafka-client/constants');
-
-
 
 /**
  * @swagger
@@ -49,20 +45,20 @@ router.get('/', (req, res) => {
   const pagin = paginate(req);
 
   kafkaClient.make_request(
-    FLC_TPC_GET_SKILLS_RQ,
+    FLC_TPC_SKILL,
+    GET_ALL,
     {pagin},
-    FLC_TPC_GET_SKILLS_RS,
     (err, data) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendArray(res, data.docs, data.cnt);
+      else handleRes.sendArray(res, data.skills, data.cnt);
     });
-
-  Promise.all([
-    Skill.count({}),
-    Skill.find({}).skip(pagin.skip).limit(pagin.limit)
-  ]).then( ([cnt, skills]) => {
-    handleRes.sendArray(res, skills, cnt);
-  }).catch(err => handleRes.sendInternalSystemError(res, err))
+  /*
+    Promise.all([
+      Skill.count({}),
+      Skill.find({}).skip(pagin.skip).limit(pagin.limit)
+    ]).then( ([cnt, skills]) => {
+      handleRes.sendArray(res, skills, cnt);
+    }).catch(err => handleRes.sendInternalSystemError(res, err))*/
 });
 
 
@@ -87,11 +83,16 @@ router.get('/', (req, res) => {
  */
 router.get('/:skillId', function (req, res) {
   const skillId = req.params.skillId;
-  if ( skillId !== undefined && skillId !== "")
-    Skill.findOne({_id: skillId}, (err, doc) => {
-      if (err) handleRes.sendNotFound(res, err);
-      else handleRes.sendDoc(res, doc);
-    });
+  if (skillId !== undefined && skillId !== "") {
+    kafkaClient.make_request(
+      FLC_TPC_SKILL,
+      GET_ONE,
+      {_id: skillId},
+      (err, data) => {
+        if (err) handleRes.sendNotFound(res, err);
+        else handleRes.sendDoc(res, data);
+      });
+  }
   else
     handleRes.sendBadRequest(res, "Empty skill Id")
 });
@@ -116,15 +117,17 @@ router.get('/:skillId', function (req, res) {
  *        description: skill created
  */
 router.post('/', (req, res) => {
-  if ( req.body.skillName === undefined) handleRes.sendBadRequest("Skill Name Needed");
+  if (req.body.skillName === undefined) handleRes.sendBadRequest("Skill Name Needed");
   else {
-    const skill = new Skill({
-      skillName: req.body.skillName
-    });
-    skill.save((err) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendCreated(res);
-    })
+
+    kafkaClient.make_request(
+      FLC_TPC_SKILL,
+      POST,
+      {skillName: req.body.skillName},
+      (err, data) => {
+        if (err) handleRes.sendInternalSystemError(res, err);
+        else handleRes.sendCreated(res, data);
+      });
   }
 });
 
