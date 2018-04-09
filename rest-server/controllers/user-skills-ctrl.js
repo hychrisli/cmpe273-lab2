@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-// const UserSkill = require('../models/user-skill');
 const handleRes = require('./handle-res');
 const kafkaClient = require('../kafka-client/client');
 const {

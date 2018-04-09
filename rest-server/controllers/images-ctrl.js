@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
+const base64Img = require('base64-img');
 const imageDir = process.cwd() + process.env.IMAGE_DIR;
-const User = require('../models/user');
 const handleRes = require('./handle-res');
+
+const kafkaClient = require('../kafka-client/client');
+const {
+  FLC_TPC_IMAGE,
+  GET_ONE,
+  POST,
+} = require('../kafka-client/constants');
+
 
 /**
  * @swagger
@@ -33,25 +40,41 @@ router.post('/:username', (req, res) => {
 
   if (!req.files) handleRes.sendBadRequest(res, 'No files were uploaded');
 
-  let image = req.files.file;
-  let imageName = username + '_' + image.name;
-
-  image.mv(imageDir + '/' + imageName, (err) => {
+  const image = req.files.file;
+  const imageFile = imageDir + username;
+  image.mv(imageFile, (err) => {
     if (err) handleRes.sendInternalSystemError(res, err);
-    else {
-      User.update({username},
-        {
-          $set:
-            {
-              image: imageName,
-              image_url: 'http://localhost:5000/api/images/' + username
-            }
-        }, (err) => {
-          if (err) handleRes.sendInternalSystemError(res, err);
-          else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"})
-        })
-    }
-  })
+    const base64Data = base64Img.base64Sync(imageFile);
+
+    kafkaClient.make_request(
+      FLC_TPC_IMAGE,
+      POST,
+      {username, base64Img: base64Data},
+      (err) => {
+        if (err) handleRes.sendInternalSystemError(res, err);
+        else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"});
+      });
+  });
+
+
+  /*
+    let imageName = username + '_' + image.name;
+    image.mv(imageDir + '/' + imageName, (err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else {
+        User.update({username},
+          {
+            $set:
+              {
+                image: imageName,
+                image_url: imageApiUrl + username
+              }
+          }, (err) => {
+            if (err) handleRes.sendInternalSystemError(res, err);
+            else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"})
+          })
+      }
+    })*/
 });
 
 /**
@@ -76,16 +99,30 @@ router.post('/:username', (req, res) => {
 router.get('/:username', (req, res) => {
   const username = req.params.username;
 
-  User.findOne({username}, (err, user) => {
-    if (err) handleRes.sendNotFound(res, err);
-    else {
-      const imageFile = imageDir + '/' + user.image;
-      if (fs.existsSync(imageFile))
-        res.sendFile(imageFile);
-      else
-        handleRes.sendNotFound(res, new Error("No such file"));
-    }
-  });
+  kafkaClient.make_request(
+    FLC_TPC_IMAGE,
+    GET_ONE,
+    {username},
+    (err, data) => {
+      if (err) handleRes.sendNotFound(res, err);
+      else {
+        base64Img.img(data.base64Img, imageDir, username, (err, file) => {
+          if (err) handleRes.sendInternalSystemError(res, err);
+          else res.sendFile(file)
+        });
+      }
+    });
+
+  /*  User.findOne({username}, (err, user) => {
+      if (err) handleRes.sendNotFound(res, err);
+      else {
+        const imageFile = imageDir + '/' + user.image;
+        if (fs.existsSync(imageFile))
+          res.sendFile(imageFile);
+        else
+          handleRes.sendNotFound(res, new Error("No such file"));
+      }
+    });*/
 });
 
 module.exports = router;
