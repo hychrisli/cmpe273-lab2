@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const projDao = require('../dao/projs-dao');
+const BidDao = require('../dao/bids-dao');
 
 /**
  * @swagger
@@ -27,7 +29,7 @@ const router = express.Router();
  */
 
 router.put('/:project_id', (req, res) => {
-/*    const project_id = req.params.project_id;
+    const project_id = req.params.project_id;
     const hirePromise = projDao.update(Number(project_id), req.body);
     const bidPromise = BidDao.update({project_id}, {is_active: 'false'});
 
@@ -37,7 +39,7 @@ router.put('/:project_id', (req, res) => {
       }).catch(err => {
       console.log(error);
       res.status(500).send(err);
-    });*/
+    });
   }
 );
 

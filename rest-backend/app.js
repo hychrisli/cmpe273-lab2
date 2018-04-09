@@ -19,6 +19,7 @@ var images = require('./controllers/images-ctrl');
 var bids = require('./controllers/bids-ctrl');
 var skills = require('./controllers/skills-ctrl');
 var projSkills = require('./controllers/proj-skills-ctrl');
+var projFiles = require('./controllers/proj-files-ctrl');
 
 var app = express();
 
@@ -56,6 +57,7 @@ app.use('/api/images', images);
 app.use('/api/bids', bids);
 app.use('/api/skills', skills);
 app.use('/api/proj-skills', projSkills);
+app.use('/api/proj-files', projFiles);
 
 
 // catch 404 and forward to error handler

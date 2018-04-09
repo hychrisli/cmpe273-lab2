@@ -1,13 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const UserSkill = require('../models/user-skill');
 const handleRes = require('./handle-res');
-const kafkaClient = require('../kafka-client/client');
-const {
-  GET_ALL,
-  POST,
-  FLC_TPC_USER_SKILL
-} = require('../kafka-client/constants');
-
 
 /**
  * @swagger
@@ -30,14 +24,16 @@ const {
  */
 router.get('/', (req, res) => {
   const userId = req.query.userId;
-  kafkaClient.make_request(
-    FLC_TPC_USER_SKILL,
-    GET_ALL,
-    {userId},
-    (err, data) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendArray(res, data);
-    });
+  let filter = {};
+  if (userId !== undefined) {
+    filter.userId = userId;
+  }
+
+  UserSkill.find(filter, (err, docs) => {
+    if (err) handleRes.sendNotFound(res, err);
+    else handleRes.sendArray(res, docs)
+  });
+
 });
 
 /**
@@ -66,28 +62,23 @@ router.get('/', (req, res) => {
  *      201:
  *        description: skill added to user
  */
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   const userId = req.body.userId;
   let skillIds = req.body.skillId;
   if (!Array.isArray(skillIds))
     skillIds = skillIds.split(',');
 
-  const userSkills = [];
+  userSkills = [];
   for (let i = 0; i < skillIds.length; i++) {
     userSkills.push({
       userId,
       skillId: skillIds[i]
     });
   }
-
-  kafkaClient.make_request(
-    FLC_TPC_USER_SKILL,
-    POST,
-    {userSkills},
-    (err) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendCreated(res);
-    });
+  UserSkill.collection.insert(userSkills, {ordered: false}, (err) => {
+    if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendCreated(res);
+  });
 });
 
 module.exports = router;
