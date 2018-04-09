@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Skill = require('../models/skill');
 const {paginate} = require('./lib');
 const handleRes = require('./handle-res');
-
 const kafkaClient = require('../kafka-client/client');
 const {
   GET_ALL,
@@ -43,7 +41,6 @@ const {
  */
 router.get('/', (req, res) => {
   const pagin = paginate(req);
-
   kafkaClient.make_request(
     FLC_TPC_SKILL,
     GET_ALL,
@@ -52,13 +49,6 @@ router.get('/', (req, res) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendArray(res, data.skills, data.cnt);
     });
-  /*
-    Promise.all([
-      Skill.count({}),
-      Skill.find({}).skip(pagin.skip).limit(pagin.limit)
-    ]).then( ([cnt, skills]) => {
-      handleRes.sendArray(res, skills, cnt);
-    }).catch(err => handleRes.sendInternalSystemError(res, err))*/
 });
 
 

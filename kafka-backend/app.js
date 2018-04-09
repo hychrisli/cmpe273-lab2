@@ -6,8 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
-require('./kafka-client/user-client');
-require('./kafka-client/skill-client');
+require('./kafka-client');
 
 var app = express();
 
