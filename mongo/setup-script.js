@@ -164,6 +164,10 @@ db.Bid.insert([
   }
 ]);
 
+db.Session.drop();
+db.createCollection('Session');
+
+
 // image
 db.Image.drop();
 db.createCollection('Image');

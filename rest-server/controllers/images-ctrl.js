@@ -55,26 +55,6 @@ router.post('/:username', (req, res) => {
         else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"});
       });
   });
-
-
-  /*
-    let imageName = username + '_' + image.name;
-    image.mv(imageDir + '/' + imageName, (err) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else {
-        User.update({username},
-          {
-            $set:
-              {
-                image: imageName,
-                image_url: imageApiUrl + username
-              }
-          }, (err) => {
-            if (err) handleRes.sendInternalSystemError(res, err);
-            else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"})
-          })
-      }
-    })*/
 });
 
 /**
@@ -112,17 +92,6 @@ router.get('/:username', (req, res) => {
         });
       }
     });
-
-  /*  User.findOne({username}, (err, user) => {
-      if (err) handleRes.sendNotFound(res, err);
-      else {
-        const imageFile = imageDir + '/' + user.image;
-        if (fs.existsSync(imageFile))
-          res.sendFile(imageFile);
-        else
-          handleRes.sendNotFound(res, new Error("No such file"));
-      }
-    });*/
 });
 
 module.exports = router;
