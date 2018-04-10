@@ -170,7 +170,7 @@ router.post('/login', function (req, res, next) {
       else if (!bcrypt.compareSync(req.body.password, user.password))
         handleRes.sendBadRequest(res, "Wrong Password");
       else{
-        const token = 'bearer ' + jwt.sign({user}, key);
+        const token = jwt.sign({user}, key);
         kafkaClient.make_request(
           FLC_TPC_SESSION,
           POST,
@@ -181,7 +181,7 @@ router.post('/login', function (req, res, next) {
           },
           (err) => {
             if (err) handleRes.sendInternalSystemError(res, err);
-            else handleRes.sendDoc(res, token);
+            else handleRes.sendDoc(res, 'bearer ' + token);
           }
         )
       }
