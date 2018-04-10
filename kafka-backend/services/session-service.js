@@ -5,7 +5,6 @@ exports.handleGetSession = (req, cb) => {
   console.log(req);
   Session.findOne({username: req.username},
     (err, data) => {
-      console.log(data);
       handler.genericCallback(err, data, cb)
     });
 };

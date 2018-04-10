@@ -45,7 +45,7 @@ class Dashboard extends Component {
       options.headers = new Headers({ Accept: 'application/json' });
     }
     // add your own headers here
-    options.headers.set('Authorization', this.props.client.token.jwt);
+    options.headers.set('Authorization', this.props.client.token);
     return fetchUtils.fetchJson(url, options);
   };
   restClient = jsonServerRestClient(`${process.env.REACT_APP_API_URL}`, this.httpClient);

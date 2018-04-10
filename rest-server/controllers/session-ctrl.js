@@ -6,7 +6,6 @@ const kafkaClient = require('../kafka-client/client');
 const jwt = require('jsonwebtoken');
 const {
   GET_ONE,
-  POST,
   DELETE,
   FLC_TPC_SESSION
 } = require('../kafka-client/constants');
@@ -78,7 +77,7 @@ router.delete('/', function (req, res) {
       {username: user.user.username},
       (err) => {
         if (err) handleRes.sendNotFound(res, err);
-        else handleRes.sendOK(res);
+        else handleRes.sendDoc(res, user.user);
       }
     )
   }
