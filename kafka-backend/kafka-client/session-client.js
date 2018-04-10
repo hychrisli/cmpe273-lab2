@@ -9,9 +9,9 @@ const {
   POST
 } = require('./constants');
 
-const userConsumer = new conn.getConsumer(FLC_TPC_SESSION);
+const sessConsumer = new conn.getConsumer(FLC_TPC_SESSION);
 
-userConsumer.on('message', function (message) {
+sessConsumer.on('message', function (message) {
   const req = JSON.parse(message.value);
   console.log('Request Received: ', message.topic, req.type);
   switch (req.type) {
@@ -31,4 +31,12 @@ userConsumer.on('message', function (message) {
       });
       break;
   }
+});
+
+sessConsumer.on('error', (err) => {
+  console.log(err);
+});
+
+sessConsumer.on('offsetOutOfRange', (topic)=>{
+  handler.handleOutOfRange(topic, sessConsumer);
 });

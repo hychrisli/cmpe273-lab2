@@ -26,3 +26,11 @@ imageConsumer.on('message', function (message) {
       break;
   }
 });
+
+imageConsumer.on('error', (err) => {
+  console.log(err);
+});
+
+imageConsumer.on('offsetOutOfRange', (topic)=>{
+  handler.handleOutOfRange(topic, imageConsumer);
+});
