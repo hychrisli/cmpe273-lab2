@@ -14,19 +14,21 @@ exports.sendCreated = (res, data=null) => {
 exports.sendArray = (res, array, total=0) => {
   res = setArrayHeader(res, array, total);
   let jsonStr = JSON.stringify(array);
-  jsonStr = jsonStr.replace(/\"_id\":/g, "\"id\":");
+  if ( jsonStr !== null && jsonStr !== undefined)
+    jsonStr = jsonStr.replace(/\"_id\":/g, "\"id\":");
   res.send(jsonStr);
 };
 
-exports.sendOK = (res) => {
+exports.sendOK = (res, msg='') => {
   res = setObjectHeader(res);
-  res.send({success: true, message:"OK"})
+  res.send({success: true, message: msg === '' ? 'OK' : msg})
 };
 
 exports.sendDoc = (res, doc) => {
   res = setObjectHeader(res);
   let jsonStr = JSON.stringify(doc);
-  jsonStr = jsonStr.replace("\"_id\":", "\"id\":");
+  if ( jsonStr !== null && jsonStr !== undefined)
+    jsonStr = jsonStr.replace("\"_id\":", "\"id\":");
   res.send(jsonStr);
 };
 
@@ -45,7 +47,7 @@ exports.sendNotFound = (res, err) => {
 
 exports.sendBadRequest = (res, msg) => {
   res = setObjectHeader(res);
-  res.status(401).send({success: false, message: "Bad Request: " + msg });
+  res.status(400).send({success: false, message: "Bad Request: " + msg });
 };
 
 const setObjectHeader = (res) => {

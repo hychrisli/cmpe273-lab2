@@ -1,4 +1,5 @@
-require('./image-cllient');
+require('./bid-client');
+require('./image-client');
 require('./project-client');
 require('./skill-client');
 require('./session-client');

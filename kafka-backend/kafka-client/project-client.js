@@ -7,7 +7,8 @@ const {
   GET_ALL,
   GET_ONE,
   PUT,
-  POST
+  POST,
+  DELETE
 } = require('./constants');
 
 const projectConsumer = new conn.getConsumer(FLC_TPC_PROJECT);
@@ -36,6 +37,10 @@ projectConsumer.on('message', function (message) {
         handler.genericProduce(err, data, req)
       });
       break;
+    case DELETE:
+      projectSvc.handleDelProject(req.data, (err, data) => {
+        handler.genericProduce(err, data, req)
+      });
   }
 });
 

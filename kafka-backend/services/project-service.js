@@ -25,6 +25,11 @@ exports.handlePostProject = (req, cb) =>{
 exports.handlePutProject = (req, cb) =>{
   const form = req.form;
   console.log(form);
-  Project.update({_id: req._id}, {$set: form},
+  Project.update({_id: req._id, employerId: req.employerId}, {$set: form},
     (err, data) => {handler.genericCallback(err, data, cb)});
+};
+
+exports.handleDelProject = (req, cb) =>{
+  Project.remove({_id: req._id, employerId: req.employerId},
+    (err, data) => {handler.genericCallback(err, data, cb)} )
 };

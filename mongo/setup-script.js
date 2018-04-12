@@ -95,7 +95,8 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     minBudget: 300.0,
     maxBudget: 400.0,
-    startDate: new Date('2018-01-23')
+    startDate: new Date('2018-01-23'),
+    status: 0,
   },
   {
     title: 'project 2',
@@ -103,7 +104,8 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     minBudget: 400.0,
     maxBudget: 600.0,
-    startDate: new Date('2017-12-24')
+    startDate: new Date('2017-12-24'),
+    status: 0,
   },
   {
     title: 'project 3',
@@ -111,7 +113,8 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'abc'})._id.str,
     minBudget: 500.0,
     maxBudget: 800.0,
-    startDate: new Date('2018-02-12')
+    startDate: new Date('2018-02-12'),
+    status: 0,
   }
 ]);
 

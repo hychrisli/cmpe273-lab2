@@ -12,6 +12,7 @@ const {
   FLC_TPC_PROJECT,
   GET_ALL,
   GET_ONE,
+  DELETE,
   POST,
   PUT
 } = require('../kafka-client/constants');
@@ -40,7 +41,6 @@ const {
  */
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   const employerId = req.query.employerId;
-
   kafkaClient.make_request(
     FLC_TPC_PROJECT,
     GET_ALL,
@@ -226,16 +226,53 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  */
 
 router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
-
+  const user = jwtDecode(req.header('Authorization'));
   const projectId = req.params.project_id;
   kafkaClient.make_request(
     FLC_TPC_PROJECT,
     PUT,
-    {_id: projectId, form: req.body},
+    {_id: projectId, employerId: user._id, form: req.body},
     (err) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendOK(res);
     });
 });
+
+
+/**
+ * @swagger
+ * /projects/{project_id}:
+ *  delete:
+ *    description: update a project
+ *    tags:
+ *      - projects
+ *    security:
+ *      - bearer: []
+ *    produces:
+ *      - application/json
+ *    parameters:
+ *      - name: project_id
+ *        description: project ID
+ *        in: path
+ *        required: true
+ *        type: string
+ *    responses:
+ *      200:
+ *        description: project updated
+ */
+
+router.delete('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const user = jwtDecode(req.header('Authorization'));
+  const projectId = req.params.project_id;
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT,
+    DELETE,
+    {_id: projectId, employerId: user._id},
+    (err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendOK(res);
+    });
+});
+
 
 module.exports = router;
