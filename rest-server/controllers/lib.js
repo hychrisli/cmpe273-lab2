@@ -1,5 +1,5 @@
-
-
+const {key} = require('../auth/constants');
+const jwt = require('jsonwebtoken');
 
 exports.paginate = (req) => {
   let pagin = {};
@@ -9,4 +9,11 @@ exports.paginate = (req) => {
     pagin['limit'] = Number(req.query._end) - start;
   }
   return pagin;
+};
+
+exports.jwtDecode = (token) => {
+  // remove 'bearer'
+  token = token.substring(7, token.length);
+  const payload = jwt.decode(token, key);
+  return payload.user;
 };

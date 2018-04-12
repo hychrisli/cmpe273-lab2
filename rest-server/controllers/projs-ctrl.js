@@ -5,6 +5,17 @@ const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
 const passport = require('passport');
 require('../auth/passport')(passport);
+const {jwtDecode} = require('./lib');
+
+const kafkaClient = require('../kafka-client/client');
+const {
+  FLC_TPC_PROJECT,
+  GET_ALL,
+  GET_ONE,
+  POST,
+  PUT
+} = require('../kafka-client/constants');
+
 
 /**
  * @swagger
@@ -13,6 +24,8 @@ require('../auth/passport')(passport);
  *    description: Retrieve all projects
  *    tags:
  *       - projects
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -27,13 +40,15 @@ require('../auth/passport')(passport);
  */
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   const employerId = req.query.employerId;
-  let filter = {};
-  if (employerId !== undefined) filter.employerId = employerId;
-  Project.find(filter, (err, docs) => {
-    if (err) handleRes.sendInternalSystemError(res);
-    else handleRes.sendArray(res, docs);
-  })
-  //promiseGetResponse(projDao.retrieveAll(filter), res, 200);
+
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT,
+    GET_ALL,
+    {employerId},
+    (err, docs) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, docs);
+    });
 });
 
 
@@ -43,7 +58,9 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *  get:
  *    description: Retrieve Project Info
  *    tags:
- *       - projects
+ *      - projects
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -110,7 +127,9 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
  *  post:
  *    description: Create a new project
  *    tags:
- *       - projects
+ *      - projects
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -121,11 +140,6 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
  *        type: string
  *      - name: description
  *        description: Description of the project
- *        in: formData
- *        required: true
- *        type: string
- *      - name: employerId
- *        description: Employer's user ID
  *        in: formData
  *        required: true
  *        type: string
@@ -149,12 +163,18 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
  *        description: project created
  */
 router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-  req.body.startDate = new Date(req.body.startDate);
-  const project = new Project(req.body);
-  project.save((err) => {
-    if (err) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendCreated(res);
-  });
+  const user = jwtDecode(req.header('Authorization'));
+  const form = req.body;
+  form.employerId = user._id;
+
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT,
+    POST,
+    {form},
+    (err, data) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendDoc(res, data);
+    });
 });
 
 
@@ -165,6 +185,8 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *    description: update a project
  *    tags:
  *      - projects
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -172,7 +194,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *        description: project ID
  *        in: path
  *        required: true
- *        type: number
+ *        type: string
  *      - name: title
  *        description: Title of the project
  *        in: formData
@@ -204,15 +226,16 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  */
 
 router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
-/*  console.log(req.params.project_id);
-  const date = new Date(req.body.start_date);
-  req.body.start_date = date.toISOString().slice(0, 10);
-  delete req.body['skills'];
-  delete req.body['files'];
-  delete req.body['bids'];
-  delete req.body['avg_price'];
-  console.log(req.body);
-  promisePostResponse(projDao.update(Number(req.params.project_id), req.body), req, res, 200);*/
+
+  const projectId = req.params.project_id;
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT,
+    PUT,
+    {_id: projectId, form: req.body},
+    (err) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendOK(res);
+    });
 });
 
 module.exports = router;

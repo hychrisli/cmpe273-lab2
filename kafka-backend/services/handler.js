@@ -1,6 +1,9 @@
 
 
 exports.genericCallback = (err, data, cb) => {
-  if (err) cb(err);
+  if (err) {
+    console.log(err);
+    cb(err)
+  }
   else cb(null, data);
 };

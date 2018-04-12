@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const handleRes = require('./handle-res');
-const {key} = require('../auth/constants');
 const kafkaClient = require('../kafka-client/client');
-const jwt = require('jsonwebtoken');
+const {jwtDecode} = require('./lib');
 const {
   GET_ONE,
   DELETE,
@@ -30,10 +29,7 @@ router.get('/', (req, res) => {
   let token = req.header('Authorization');
   if ( token === undefined ) handleRes.sendNotFound(res);
   else {
-    token = token.substring(7, token.length);
-    const payload = jwt.decode(token, key);
-    const user = payload.user;
-    console.log(user);
+    const user = jwtDecode(token);
     kafkaClient.make_request(
       FLC_TPC_SESSION,
       GET_ONE,
@@ -69,9 +65,7 @@ router.delete('/', function (req, res) {
   console.log(token);
   if ( token === undefined ) handleRes.sendNotFound(res);
   else {
-    token = token.substring(7, token.length);
-    const payload = jwt.decode(token, key);
-    const user = payload.user;
+    const user = jwtDecode(token);
     console.log(user);
     kafkaClient.make_request(
       FLC_TPC_SESSION,

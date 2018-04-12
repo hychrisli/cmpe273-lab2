@@ -248,23 +248,8 @@ router.put('/:username', function (req, res) {
     (err, user) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else if (user === null) handleRes.sendNotFound(res, "Not Found");
-      else handleRes.sendDoc(res, resUser(user))
+      else handleRes.sendDoc(res, user)
     });
 });
-
-
-const resUser = (doc) => {
-  const token = jwt.sign({user: doc}, key);
-  return {
-    id: doc._id,
-    username: doc.username,
-    email: doc.email,
-    firstName: doc.firstName,
-    lastName: doc.lastName,
-    aboutMe: doc.aboutMe,
-    jwt: 'bearer ' + token
-  };
-};
-
 
 module.exports = router;
