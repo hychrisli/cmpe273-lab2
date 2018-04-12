@@ -45,14 +45,12 @@ export function checkWidgetAuthorization({dispatch, getState}){
   }
 }
 
-function checkAuthorization(dispatch, cb){
+function checkAuthorization(dispatch){
   const storedToken = localStorage.getItem('token');
 
   if ( storedToken ) {
     const token = JSON.parse(storedToken);
-    dispatch(setClient(token));
     return true;
   }
-
   return false;
 }

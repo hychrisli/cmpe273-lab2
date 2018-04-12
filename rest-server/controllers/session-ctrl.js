@@ -31,17 +31,18 @@ router.get('/', (req, res) => {
   if ( token === undefined ) handleRes.sendNotFound(res);
   else {
     token = token.substring(7, token.length);
-    const user = jwt.decode(token, key);
+    const payload = jwt.decode(token, key);
+    const user = payload.user;
     console.log(user);
     kafkaClient.make_request(
       FLC_TPC_SESSION,
       GET_ONE,
-      {username: user.user.username},
+      {username: user.username},
       (err, data) => {
         if (err) handleRes.sendNotFound(res, err);
-        else if ( data.jwt !== token ) handleRes.sendNotFound(res, "Stale Token");
-        else if ( new Date() > data.expire ) handleRes.sendNotFound(res, "Session Expired");
-        else handleRes.sendOK(res);
+        // else if ( data.jwt !== token ) handleRes.sendNotFound(res, "Stale Token");
+        // else if ( new Date() > data.expire ) handleRes.sendNotFound(res, "Session Expired");
+        else handleRes.sendDoc(res, user);
       }
     )
   }
@@ -69,15 +70,16 @@ router.delete('/', function (req, res) {
   if ( token === undefined ) handleRes.sendNotFound(res);
   else {
     token = token.substring(7, token.length);
-    const user = jwt.decode(token, key);
+    const payload = jwt.decode(token, key);
+    const user = payload.user;
     console.log(user);
     kafkaClient.make_request(
       FLC_TPC_SESSION,
       DELETE,
-      {username: user.user.username},
+      {username: user.username},
       (err) => {
         if (err) handleRes.sendNotFound(res, err);
-        else handleRes.sendDoc(res, user.user);
+        else handleRes.sendDoc(res, user);
       }
     )
   }
