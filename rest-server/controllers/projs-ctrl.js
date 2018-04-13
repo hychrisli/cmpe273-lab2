@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Project = require('../models/project');
-const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
 const passport = require('passport');
 require('../auth/passport')(passport);
@@ -91,51 +89,6 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendArray(res, docs);
     });
-
-/*
-  if (projectId !== undefined) {
-    // const filesPromise = projFilesDao.retrieve({project_id});
-    // const bidsPromise = BidDao.countBids({project_id});
-    // const avgPricePromise = BidDao.avgBidPrice('bid_price', {project_id});
-
-    Promise.all([
-      Project.findOne({_id: projectId}),
-      ProjectSkill.find({projectId}),
-      //filesPromise,
-      //bidsPromise,
-      //avgPricePromise
-    ])
-      .then(results => {
-        let project = results[0];
-        const skills = results[1];
-        //const files = results[2];
-        //const cnts = results[3];
-        //const avgs = results[4];
-
-        let skillSet = [];
-        for (let i = 0; i < skills.length; i++)
-          skillSet.push(skills[i].skillId);
-        console.log(skillSet);
-        /!*          let fileSet = [];
-                  for ( let i = 0; i < files.length; i++ )
-                    fileSet.push(files[i].id);*!/
-
-        const projStr = JSON.stringify(project);
-        let proj = JSON.parse(projStr);
-        proj.skills = skillSet;
-
-        /!*proj['files'] = fileSet;
-        proj['bids'] = cnts[0].cnt;
-        proj['avg_price'] = avgs[0].avg_price;*!/
-        handleRes.sendDoc(res, proj);
-
-      }).catch(err => {
-      handleRes.sendNotFound(res, err);
-    })
-
-  } else {
-    handleRes.sendBadRequest(res, "Invalid Project Id")
-  }*/
 });
 
 /**

@@ -185,7 +185,6 @@ router.post('/login', function (req, res, next) {
           }
         )
       }
-        /// /handleRes.sendDoc(res, resUser(doc))
     });
 });
 

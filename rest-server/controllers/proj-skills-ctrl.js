@@ -86,9 +86,9 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
       skIdStr: skIds,
       userId: user._id
     },
-    (err) => {
+    (err, data) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendOK(res);
+      else handleRes.sendArray(res, data);
     });
 });
 

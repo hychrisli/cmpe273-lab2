@@ -92,12 +92,12 @@ class Dashboard extends Component {
       {!this.state.isLoading &&(
         <div>
           <Logout/>
-          <Admin // authClient={authClient}
+          <Admin// authClient={authClient}
             customReducers={{profile, client, project, bid, skillChoices}}
             customSagas={[IndexSaga]}
             menu={Menu}
             initialState={{'client': this.props.client}}
-            title={"Freelancer"}
+            title={"Freelancer:"}
             customRoutes={customRoutes}
             restClient={this.restClient}>
             <Resource name='projects'

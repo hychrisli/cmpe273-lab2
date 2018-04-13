@@ -4,7 +4,6 @@ import {DashboardMenuItem, MenuItemLink, getResources } from 'admin-on-rest';
 import {getUserId} from "./lib/get-info";
 import {Divider} from 'material-ui'
 
-
 const styles = {
   main: {
     display: 'flex',
@@ -17,6 +16,7 @@ const styles = {
 
 const Menu = ({onMenuTap, translate, logout}) => (
   <div style={styles.main}>
+    <p>Hello! Dear User: </p>
     <DashboardMenuItem onClick={onMenuTap} />
     <MenuItemLink
       to={"/projects?filter={}"}

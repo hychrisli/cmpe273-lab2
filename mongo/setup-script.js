@@ -70,50 +70,62 @@ db.UserSkill.insert([
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Java'})._id.str,
+    skillName: 'Java'
   },
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Spark'})._id.str,
+    skillName: 'Spark'
   },
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Oracle'})._id.str,
+    skillName: 'Oracle'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'AWS'})._id.str,
+    skillName: 'AWS'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'GCP'})._id.str,
+    skillName: 'GCP'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'AJAX'})._id.str,
+    skillName: 'AJAX'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     userId: db.User.findOne({username: 'wer'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     userId: db.User.findOne({username: 'wer'})._id.str,
     skillId: db.Skill.findOne({skillName: 'C++'})._id.str,
+    skillName: 'C++'
   },
   {
     userId: db.User.findOne({username: 'wer'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
   },
   {
     userId: db.User.findOne({username: 'wer'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Linux'})._id.str,
+    skillName: 'Linux'
   },
 ]);
 
@@ -161,40 +173,48 @@ db.Project.insert([
 ]);
 
 // Project Skill
-db.ProjctSkill.drop();
+db.ProjectSkill.drop();
 db.createCollection('ProjectSkill');
 db.ProjectSkill.insert([
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
     skillId: db.Skill.findOne({skillName: 'C++'})._id.str,
+    skillName: 'C++'
   },
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Spark'})._id.str,
+    skillName: 'Spark'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Oracle'})._id.str,
+    skillName: 'Oracle'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'AWS'})._id.str,
+    skillName: 'AWS'
   },
   {
     projectId: db.Project.findOne({title: 'project 2'})._id.str,
     skillId: db.Skill.findOne({skillName: 'GCP'})._id.str,
+    skillName: 'GCP'
   }
 ]);
 

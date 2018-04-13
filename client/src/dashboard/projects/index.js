@@ -12,7 +12,6 @@ import AddSkillButton from '../proj-skills/button-add-skill';
 import UploadButton from '../proj-files/button-upload';
 import ListFilesButton from '../proj-files/button-list-files'
 import {getUsername} from '../lib/get-info'
-
 // List
 
 const ProjFilter = (props) => (
@@ -104,26 +103,29 @@ const ProjShowActions = ({basePath, data}) => (
   </CardActions>
 );
 
+const detailStyle = { display: 'inline-block', verticalAlign: 'top', marginRight: '2em', minWidth: '8em', marginBottom: '2em' };
+const MyDivider = ({source, record = {}}) => (<Divider />);
+
+
 export const ProjShow = (props) => {
   return (
   <Show {...props} actions={<ProjShowActions/>} title={<ProjTitle/>} >
     <SimpleShowLayout>
-      <TextField source={"title"}/>
-      <TextField source={"description"}/>
-      <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show">
+      <TextField source={"title"} style={detailStyle}/>
+      <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show" style={detailStyle}>
         <TextField source={"username"}/>
       </ReferenceField>
-      <TextField source={"minBudget"}/>
-      <TextField source={"maxBudget"}/>
-      <DateField source={"startDate"}/>
-      <TextField source={"chosenBid"}/>
-      <TextField source={"bids"}  label={"# of Bids"}/>
-      <TextField source={"avgPrice"}  label={"Avg. Bid Price"}/>
-      <ReferenceArrayField label={"skills"} reference={"skills"} source={"skills"}>
-        <SingleFieldList>
-          <ChipField source={"skillName"}/>
-        </SingleFieldList>
-      </ReferenceArrayField>
+      <TextField source={"minBudget"} style={detailStyle}/>
+      <TextField source={"maxBudget"} style={detailStyle}/>
+      <DateField source={"startDate"} style={detailStyle}/>
+      <MyDivider />
+      <TextField source={"description"} style={detailStyle}/>
+      <MyDivider />
+      <TextField source={"chosenBid"} style={detailStyle}/>
+      <TextField source={"bids"}  label={"# of Bids"} style={detailStyle}/>
+      <TextField source={"avgPrice"}  label={"Avg. Bid Price"} style={detailStyle}/>
+      <MyDivider />
+      <TextField source={"skills"} style={detailStyle}/>
       <ListFilesButton {...props}/>
     </SimpleShowLayout>
   </Show>
