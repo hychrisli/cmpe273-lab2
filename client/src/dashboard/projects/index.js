@@ -11,7 +11,7 @@ import SkillsButton from './button-skills'
 import AddSkillButton from '../proj-skills/button-add-skill';
 import UploadButton from '../proj-files/button-upload';
 import ListFilesButton from '../proj-files/button-list-files'
-import {getUsername} from '../lib/get-info'
+import { connect } from 'react-redux';
 // List
 
 const ProjFilter = (props) => (
@@ -75,18 +75,25 @@ export const ProjEdit = (props) => (
   </Edit>
 );
 
-export const ProjCreate = (props) => (
+const ProjCreate = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="title"/>
       <TextInput source="description"/>
-      <TextInput source="employer" defaultValue={getUsername()}/>
+      <TextInput source="employer" defaultValue={props.client.token.username}/>
       <NumberInput source="minBudget"/>
       <NumberInput source="maxBudget"/>
       <DateInput source="startDate"/>
     </SimpleForm>
   </Create>
 );
+
+
+const mapStateToProps = (state) => ({
+  client: state.client,
+});
+
+export const MyProjCreate = connect(mapStateToProps)(ProjCreate);
 
 const cardActionStyle = {
   zIndex: 2,

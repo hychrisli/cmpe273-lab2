@@ -13,7 +13,7 @@ import bid from './bid/reducer'
 import skillChoices from './proj-skills/reducer'
 
 import Menu from './menu';
-import {ProjList, ProjEdit, ProjCreate, ProjShow} from './projects';
+import {ProjList, ProjEdit, MyProjCreate, ProjShow} from './projects';
 import {BidList, BidShow} from './bids';
 import {SkillList, SkillCreate} from './skills';
 import {ProjSkillList, MyProjSkillCreate} from './proj-skills'
@@ -104,7 +104,7 @@ class Dashboard extends Component {
                       list={ProjList}
                       show={ProjShow}
                       edit={ProjEdit}
-                      create={ProjCreate}
+                      create={MyProjCreate}
             />
             <Resource name={'bids'}
                       list={BidList}

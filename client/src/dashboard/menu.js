@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {DashboardMenuItem, MenuItemLink, getResources } from 'admin-on-rest';
-import {getUserId} from "./lib/get-info";
 import {Divider} from 'material-ui'
 
 const styles = {
@@ -13,10 +12,9 @@ const styles = {
   },
 };
 
-
-const Menu = ({onMenuTap, translate, logout}) => (
+const Menu = ({onMenuTap, translate, logout, client}) => (
   <div style={styles.main}>
-    <p>Hello! Dear User: </p>
+    <p>Hello! {client.token.username}</p>
     <DashboardMenuItem onClick={onMenuTap} />
     <MenuItemLink
       to={"/projects?filter={}"}
@@ -45,15 +43,15 @@ const Menu = ({onMenuTap, translate, logout}) => (
       primaryText={"Profile"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/user-skills?filter={"userId"%3A"'+ getUserId() +'"}'}
+      to={'/user-skills?filter={"userId"%3A"'+ client.token.id +'"}'}
       primaryText={"My Skills"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/projects?filter={"employerId"%3A"'+ getUserId()+'"}'}
+      to={'/projects?filter={"employerId"%3A"'+ client.token.id +'"}'}
       primaryText={"My Projects"}
       onClick={onMenuTap}/>
     <MenuItemLink
-      to={'/bids?filter={"userId"%3A"'+ getUserId()+'"}'}
+      to={'/bids?filter={"userId"%3A"'+ client.token.id +'"}'}
       primaryText={"My Bids"}
       onClick={onMenuTap}/>
     {logout}
@@ -62,6 +60,7 @@ const Menu = ({onMenuTap, translate, logout}) => (
 
 const mapStateToProps = state => ({
   resources: getResources(state),
+  client: state.client,
 });
 export default connect(mapStateToProps)(Menu);
 
