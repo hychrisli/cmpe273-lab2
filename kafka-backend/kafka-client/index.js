@@ -2,6 +2,7 @@ require('./bid-client');
 require('./hire-client');
 require('./image-client');
 require('./project-client');
+require('./project-skill-client');
 require('./skill-client');
 require('./session-client');
 require('./user-client');

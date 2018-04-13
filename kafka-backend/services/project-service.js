@@ -3,22 +3,24 @@ const handler = require('./handler');
 
 
 exports.handleGetProjects = (req, cb) =>{
+  console.log(req);
   const filter = {
-    employerId: req.employerId
+    employerId: req.employerId,
+    status: req.status
   };
   Project.find(JSON.parse(JSON.stringify(filter)),
     (err, data) => {handler.genericCallback(err, data, cb)})
 };
 
 exports.handleGetProject = (req, cb) =>{
+  const projectId = req.projectId;
+
+
 };
 
 exports.handlePostProject = (req, cb) =>{
-  console.log(req);
   req.form.startDate = new Date(req.form.startDate);
   const project = new Project(req.form);
-  console.log(req.form);
-  console.log(project);
   project.save((err) => {handler.genericCallback(err, JSON.parse(JSON.stringify(project)), cb)});
 };
 

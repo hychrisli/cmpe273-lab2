@@ -25,8 +25,6 @@ const {
  *    description: Retrieve all projects
  *    tags:
  *       - projects
- *    security:
- *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -35,16 +33,24 @@ const {
  *        required: false
  *        type: string
  *        description: retrieve projects as employer
+ *      - name: status
+ *        in : query
+ *        required: false
+ *        type: number
+ *        description: retrieve projects as employer
  *    responses:
  *      200:
  *        description: projects
  */
-router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-  const employerId = req.query.employerId;
+router.get('/', (req, res) => {
+  const status = req.query.status === undefined ? 0: req.query.status;
   kafkaClient.make_request(
     FLC_TPC_PROJECT,
     GET_ALL,
-    {employerId},
+    {
+      employerId: req.query.employerId,
+      status
+    },
     (err, docs) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendArray(res, docs);
@@ -73,8 +79,19 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *      200:
  *        description: a project
  */
-router.get('/:projectId', passport.authenticate('jwt', {session: false}), function (req, res, next) {
-  const projectId = req.params.projectId;
+router.get('/:projectId', passport.authenticate('jwt', {session: false}), function (req, res) {
+
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT,
+    GET_ONE,
+    {
+      projectId: req.params.projectId,
+    },
+    (err, docs) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, docs);
+    });
+
 
   if (projectId !== undefined) {
     // const filesPromise = projFilesDao.retrieve({project_id});
