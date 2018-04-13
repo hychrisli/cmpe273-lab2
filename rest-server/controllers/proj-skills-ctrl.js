@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
 const passport = require('passport');
 require('../auth/passport')(passport);
@@ -91,19 +90,6 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendOK(res);
     });
-
-/*
-  projectSkills = [];
-  for (let i = 0; i < skillIds.length; i++) {
-    projectSkills.push({
-      projectId,
-      skillId: skillIds[i]
-    });
-  }
-  ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err) => {
-    if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendCreated(res);
-  });*/
 });
 
 module.exports = router;

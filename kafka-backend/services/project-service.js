@@ -1,4 +1,6 @@
 const Project = require('../models/project');
+const ProjectSkill = require('../models/project-skill');
+const Bid = require('../models/bid');
 const handler = require('./handler');
 
 
@@ -15,6 +17,28 @@ exports.handleGetProjects = (req, cb) =>{
 exports.handleGetProject = (req, cb) =>{
   const projectId = req.projectId;
 
+  Promise.all([
+    Project.findOne({_id: projectId}),
+    ProjectSkill.find({projectId}, {_id: 0, skillId: 1}),
+    Bid.count({projectId}),
+    Bid.aggregate([{$match: {projectId}}, {$group: {_id: null, avgPrice: { $avg: "$bidPrice"}}}])
+  ])
+    .then( ([project, skills, count, avgAgg] ) => {
+
+      if ( project === null ) cb('Not Found');
+      else {
+        let skIds = [];
+        for (let i = 0; i < skills.length; i++)
+          skIds.push(skills[i].skillId);
+
+        project = JSON.parse(JSON.stringify(project));
+        project.skills = skIds;
+        project.bids = count;
+        project.avgPrice = avgAgg.length === 1 ? avgAgg[0].avgPrice : 0;
+        cb(null, project);
+      }
+  })
+    .catch (err => cb(err))
 
 };
 

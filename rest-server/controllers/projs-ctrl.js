@@ -92,7 +92,7 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
       else handleRes.sendArray(res, docs);
     });
 
-
+/*
   if (projectId !== undefined) {
     // const filesPromise = projFilesDao.retrieve({project_id});
     // const bidsPromise = BidDao.countBids({project_id});
@@ -116,17 +116,17 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
         for (let i = 0; i < skills.length; i++)
           skillSet.push(skills[i].skillId);
         console.log(skillSet);
-        /*          let fileSet = [];
+        /!*          let fileSet = [];
                   for ( let i = 0; i < files.length; i++ )
-                    fileSet.push(files[i].id);*/
+                    fileSet.push(files[i].id);*!/
 
         const projStr = JSON.stringify(project);
         let proj = JSON.parse(projStr);
         proj.skills = skillSet;
 
-        /*proj['files'] = fileSet;
+        /!*proj['files'] = fileSet;
         proj['bids'] = cnts[0].cnt;
-        proj['avg_price'] = avgs[0].avg_price;*/
+        proj['avg_price'] = avgs[0].avg_price;*!/
         handleRes.sendDoc(res, proj);
 
       }).catch(err => {
@@ -135,7 +135,7 @@ router.get('/:projectId', passport.authenticate('jwt', {session: false}), functi
 
   } else {
     handleRes.sendBadRequest(res, "Invalid Project Id")
-  }
+  }*/
 });
 
 /**
