@@ -5,7 +5,8 @@ const handler = require('./handler');
 
 exports.handleGetBids = (req, cb) =>{
   const filter = {
-    userId: req.userId
+    userId: req.userId,
+    isActive:req.isActive
   };
   Bid.find(JSON.parse(JSON.stringify(filter)),
     (err, data) => {handler.genericCallback(err, data, cb)});

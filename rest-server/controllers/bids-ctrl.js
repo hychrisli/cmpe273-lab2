@@ -22,8 +22,6 @@ const {
  *    description: Retrieve all bids
  *    tags:
  *      - bids
- *    security:
- *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -32,15 +30,20 @@ const {
  *        required: false
  *        type: string
  *        description: retrieve bids as bidder
+ *      - name: isActive
+ *        in: query
+ *        required: false
+ *        type: boolean
+ *        description: filter active ones
  *    responses:
  *      200:
  *        description: bids
  */
-router.get('/', passport.authenticate('jwt', {session: false}),(req, res) => {
+router.get('/',(req, res) => {
   kafkaClient.make_request(
     FLC_TPC_BID,
     GET_ALL,
-    {userId: req.query.userId},
+    {userId: req.query.userId, isActive: req.query.isActive},
     (err, docs) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendArray(res, docs);

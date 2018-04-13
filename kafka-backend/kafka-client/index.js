@@ -1,4 +1,5 @@
 require('./bid-client');
+require('./hire-client');
 require('./image-client');
 require('./project-client');
 require('./skill-client');
