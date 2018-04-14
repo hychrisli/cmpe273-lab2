@@ -19,20 +19,52 @@ exports.handleGetBid = (req, cb) =>{
 
 exports.handlePostBid = (req, cb) =>{
   const form = req.form;
-  Project.findOne({_id: form.projectId}, (err, data) => {
-
-    if (err) cb (err);
-    else if (data === null) cb ( new Error("No Such Project"));
-    else if ( form.userId === data.employerId ) cb ( new Error("Cannot bid on own project"));
+  console.log(form);
+  Promise.all([
+    Project.findOne({_id: form.projectId}),
+    Bid.findOne({projectId: form.projectId, userId: form.userId})
+  ]).then(([project, preBid]) => {
+    if (project === null) cb("No Such Project");
+    else if (form.userId === project.employerId) cb ("Cannot bid on own project");
+    else if (preBid !== null) cb("Already bid on this project");
     else {
-      form.employerId = data.employerId;
+      form.employerId = project.employerId;
       const bid = new Bid(form);
-      bid.save((err) => {handler.genericCallback(err, JSON.parse(JSON.stringify(bid)), cb)})
+      Promise.all([
+        bid.save(),
+        Project.update({_id: form.projectId}, {$inc: {bidNum: 1}}),
+      ]).then(()=>{
+        cb(null, JSON.parse(JSON.stringify(bid)));
+      })
+        .catch(err => {
+          console.log(err);
+          cb(err);
+        });
     }
+  }).catch( err => {
+    console.log(err);
+    cb(err);
   });
 };
 
 exports.handleDelBid = (req, cb) =>{
-  Bid.remove({_id: req._id, userId: req.userId, isActive: true},
-    (err, data) => {handler.genericCallback(err, data, cb)} )
+
+  Bid.findOne({_id: req._id, userId: req.userId, isActive: true},
+    (err, data) => {
+      if (err) cb(err);
+      else if (data === null) cb('Invalid Bid');
+      else {
+        Promise.all([
+          Bid.remove({_id: req._id}),
+          Project.update({_id: data.projectId}, {$inc: {bidNum: -1}})
+        ])
+          .then( ([rmFb, updFb]) => {
+            cb(null, rmFb);
+          })
+          .catch( err => {
+            console.log(err);
+            cb(err);
+          });
+      }
+    });
 };

@@ -30,6 +30,8 @@ export const ProjList = (props) => (
       <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
+      <TextField source="skills"/>
+      <TextField source="bidNum" label={"# of Bids"}/>
       <BidButton/>
       <EditButton/>
       <ShowButton/>
@@ -131,7 +133,7 @@ export const ProjShow = (props) => {
       <TextField source={"description"} style={detailStyle}/>
       <MyDivider />
       <TextField source={"chosenBid"} style={detailStyle}/>
-      <TextField source={"bids"}  label={"# of Bids"} style={detailStyle}/>
+      <TextField source={"bidNum"}  label={"# of Bids"} style={detailStyle}/>
       <TextField source={"avgPrice"}  label={"Avg. Bid Price"} style={detailStyle}/>
       <MyDivider />
       <TextField source={"skills"} style={detailStyle}/>

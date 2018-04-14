@@ -32,16 +32,14 @@ exports.handleGetProject = (req, cb) =>{
 
   Promise.all([
     Project.findOne({_id: projectId}),
-    Bid.count({projectId}),
     Bid.aggregate([{$match: {projectId}}, {$group: {_id: null, avgPrice: { $avg: "$bidPrice"}}}])
   ])
-    .then( ([project, count, avgAgg] ) => {
+    .then( ([project, avgAgg] ) => {
 
       if ( project === null ) cb('Not Found');
       else {
 
         project = JSON.parse(JSON.stringify(project));
-        project.bids = count;
         project.avgPrice = avgAgg.length === 1 ? avgAgg[0].avgPrice : 0;
         cb(null, project);
       }
