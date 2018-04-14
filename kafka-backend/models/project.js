@@ -8,6 +8,8 @@ const ProjectSchema = new Schema({
   minBudget: {type: Number, required: true},
   maxBudget: {type: Number, required:true},
   startDate: {type: Date, required: true},
+  bidNum: {type: Number, default: 0},
+  skills: String,
   status: {type: Number, default: 0},
   chosenBid: String,
 });

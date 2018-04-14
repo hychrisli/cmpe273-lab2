@@ -1,5 +1,4 @@
 const Project = require('../models/project');
-const ProjectSkill = require('../models/project-skill');
 const Bid = require('../models/bid');
 const handler = require('./handler');
 
@@ -12,6 +11,7 @@ exports.handleGetProjects = (req, cb) =>{
   };
   filter = JSON.parse(JSON.stringify(filter));
   if ( req.title !== undefined ) filter.title = new RegExp(req.title, 'i');
+  if ( req.skill !== undefined ) filter.skills = new RegExp(req.skill, 'i');
 
   Project.find(filter,
     (err, data) => {handler.genericCallback(err, data, cb)})
@@ -22,20 +22,15 @@ exports.handleGetProject = (req, cb) =>{
 
   Promise.all([
     Project.findOne({_id: projectId}),
-    ProjectSkill.find({projectId}, {_id: 0, skillName: 1}),
     Bid.count({projectId}),
     Bid.aggregate([{$match: {projectId}}, {$group: {_id: null, avgPrice: { $avg: "$bidPrice"}}}])
   ])
-    .then( ([project, skills, count, avgAgg] ) => {
+    .then( ([project, count, avgAgg] ) => {
 
       if ( project === null ) cb('Not Found');
       else {
-        let skNames = [];
-        for (let i = 0; i < skills.length; i++)
-          skNames.push(skills[i].skillName);
 
         project = JSON.parse(JSON.stringify(project));
-        project.skills = skNames.join(', ');
         project.bids = count;
         project.avgPrice = avgAgg.length === 1 ? avgAgg[0].avgPrice : 0;
         cb(null, project);
