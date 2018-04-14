@@ -21,6 +21,7 @@ var bids = require('./controllers/bids-ctrl');
 var skills = require('./controllers/skills-ctrl');
 var projSkills = require('./controllers/proj-skills-ctrl');
 var sess = require('./controllers/session-ctrl');
+var balance = require('./controllers/balance-ctrl');
 
 var app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/bids', bids);
 app.use('/api/skills', skills);
 app.use('/api/proj-skills', projSkills);
 app.use('/api/session', sess);
+app.use('/api/balance', balance);
 
 
 // catch 404 and forward to error handler

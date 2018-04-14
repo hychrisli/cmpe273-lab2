@@ -61,6 +61,55 @@ db.User.insert([
   },
 ]);
 
+//Balance
+db.Balance.drop();
+db.createCollection('Balance');
+db.Balance.insert([
+  {
+    userId: db.User.findOne({username: 'xyz'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'abc'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'lot'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'Yet'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'MeToo'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+]);
+
+
 // Skill
 db.Skill.drop();
 db.createCollection('Skill');

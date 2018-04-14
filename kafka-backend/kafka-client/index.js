@@ -1,3 +1,4 @@
+require('./balance-client');
 require('./bid-client');
 require('./hire-client');
 require('./image-client');
