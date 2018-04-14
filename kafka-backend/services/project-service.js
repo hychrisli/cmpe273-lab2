@@ -13,8 +13,18 @@ exports.handleGetProjects = (req, cb) =>{
   if ( req.title !== undefined ) filter.title = new RegExp(req.title, 'i');
   if ( req.skill !== undefined ) filter.skills = new RegExp(req.skill, 'i');
 
-  Project.find(filter,
-    (err, data) => {handler.genericCallback(err, data, cb)})
+  Promise.all([
+    Project.count({}),
+    Project.find(filter).skip(req.pagin.skip).limit(req.pagin.limit)
+  ])
+    .then(([cnt, projects]) => {
+      const data = {cnt, projects};
+      cb(null, data);
+    })
+    .catch( err => {
+      console.log(err);
+      cb(err);
+    });
 };
 
 exports.handleGetProject = (req, cb) =>{

@@ -73,9 +73,9 @@ router.get('/', (req, res) => {
       title: req.query.title,
       skill: req.query.skill
     },
-    (err, docs) => {
+    (err, data) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendArray(res, docs);
+      else handleRes.sendArray(res, data.projects, data.cnt);
     });
 });
 
