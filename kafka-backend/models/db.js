@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 const Admin = mongoose.mongo.Admin;
 
-mongoose.connect('mongodb://localhost:27017/flc', {}, (err) => {
+const db = process.env.MONGODB;
+const user = process.env.MONGODB_USER;
+const pass = process.env.MONGODB_PASS;
+
+
+mongoose.connect(db, {user, pass}, (err) => {
   if (err)
     console.log("Mongo DB Connection Error", err);
   else

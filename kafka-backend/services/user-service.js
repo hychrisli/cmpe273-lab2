@@ -7,6 +7,7 @@ exports.handleGetUsers = (req, cb) => {
 };
 
 exports.handleGetUser = (filter, cb) => {
+  console.log(filter);
   User.findOne(filter,
     (err, data) => {handler.genericCallback(err, data, cb)});
 };
@@ -25,7 +26,6 @@ exports.handlePostUser = (req, cb) => {
   });
 
 };
-
 
 exports.handleUpdUser = (req, cb) => {
   const username = req.username;

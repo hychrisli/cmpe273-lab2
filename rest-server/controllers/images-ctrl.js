@@ -3,6 +3,9 @@ const router = express.Router();
 const base64Img = require('base64-img');
 const imageDir = process.cwd() + process.env.IMAGE_DIR;
 const handleRes = require('./handle-res');
+const passport = require('passport');
+require('../auth/passport')(passport);
+const {jwtDecode} = require('./lib');
 
 const kafkaClient = require('../kafka-client/client');
 const {
@@ -11,22 +14,18 @@ const {
   POST,
 } = require('../kafka-client/constants');
 
-
 /**
  * @swagger
- * /images/{username}:
+ * /images:
  *  post:
  *    description: upload image for user
  *    tags:
- *       - images
+ *      - images
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - multipart/form-data
  *    parameters:
- *      - name: username
- *        description: Username for profile image.
- *        in: path
- *        required: true
- *        type: string
  *      - in: formData
  *        name: file
  *        type: file
@@ -35,8 +34,9 @@ const {
  *      200:
  *        description: upload success
  */
-router.post('/:username', (req, res) => {
-  const username = req.params.username;
+router.post('/:username', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const user = jwtDecode(req.header('Authorization'));
+  const username = user.username;
 
   if (!req.files) handleRes.sendBadRequest(res, 'No files were uploaded');
 
@@ -55,26 +55,6 @@ router.post('/:username', (req, res) => {
         else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"});
       });
   });
-
-
-  /*
-    let imageName = username + '_' + image.name;
-    image.mv(imageDir + '/' + imageName, (err) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else {
-        User.update({username},
-          {
-            $set:
-              {
-                image: imageName,
-                image_url: imageApiUrl + username
-              }
-          }, (err) => {
-            if (err) handleRes.sendInternalSystemError(res, err);
-            else handleRes.sendDoc(res, {success: true, message: "Image Uploaded!"})
-          })
-      }
-    })*/
 });
 
 /**
@@ -112,17 +92,6 @@ router.get('/:username', (req, res) => {
         });
       }
     });
-
-  /*  User.findOne({username}, (err, user) => {
-      if (err) handleRes.sendNotFound(res, err);
-      else {
-        const imageFile = imageDir + '/' + user.image;
-        if (fs.existsSync(imageFile))
-          res.sendFile(imageFile);
-        else
-          handleRes.sendNotFound(res, new Error("No such file"));
-      }
-    });*/
 });
 
 module.exports = router;

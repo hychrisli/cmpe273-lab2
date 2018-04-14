@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { push as pushAction } from 'react-router-redux';
 import {setProject} from "../projects/actions";
 import {setSkillChoices} from '../proj-skills/actions';
-import {getUserId} from "../lib/get-info";
 
 class ListFilesButton extends Component{
 

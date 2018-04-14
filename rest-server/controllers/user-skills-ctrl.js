@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const handleRes = require('./handle-res');
+const passport = require('passport');
+require('../auth/passport')(passport);
+const {jwtDecode} = require('./lib');
+
 const kafkaClient = require('../kafka-client/client');
 const {
   GET_ALL,
@@ -47,14 +51,11 @@ router.get('/', (req, res) => {
  *    description: Add a skill to a user
  *    tags:
  *      - user-skills
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: userId
- *        description: username
- *        in: formData
- *        required: true
- *        type: string
  *      - name: skillId
  *        description: skill id
  *        in: formData
@@ -66,27 +67,22 @@ router.get('/', (req, res) => {
  *      201:
  *        description: skill added to user
  */
-router.post('/', (req, res) => {
-  const userId = req.body.userId;
-  let skillIds = req.body.skillId;
-  if (!Array.isArray(skillIds))
-    skillIds = skillIds.split(',');
-
-  const userSkills = [];
-  for (let i = 0; i < skillIds.length; i++) {
-    userSkills.push({
-      userId,
-      skillId: skillIds[i]
-    });
-  }
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const user = jwtDecode(req.header('Authorization'));
+  let skIds = req.body.skillId;
+  if (Array.isArray(skIds))
+    skIds = skIds.join();
 
   kafkaClient.make_request(
     FLC_TPC_USER_SKILL,
     POST,
-    {userSkills},
-    (err) => {
+    {
+      skIdStr: skIds,
+      userId: user._id
+    },
+    (err, data) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendCreated(res);
+      else handleRes.sendArray(res, data);
     });
 });
 

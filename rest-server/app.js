@@ -14,11 +14,13 @@ var swagger = require('./swagger');
 var users = require('./controllers/users-ctrl');
 var userSkills = require('./controllers/user-skills-ctrl');
 var projs = require('./controllers/projs-ctrl');
+var match = require('./controllers/match-ctrl');
 var hire = require('./controllers/hire-ctrl');
 var images = require('./controllers/images-ctrl');
 var bids = require('./controllers/bids-ctrl');
 var skills = require('./controllers/skills-ctrl');
 var projSkills = require('./controllers/proj-skills-ctrl');
+var sess = require('./controllers/session-ctrl');
 
 var app = express();
 
@@ -51,11 +53,13 @@ app.use('/api/docs', swagger);
 app.use('/api/users', users);
 app.use('/api/user-skills', userSkills);
 app.use('/api/projects', projs);
+app.use('/api/match', match);
 app.use('/api/hire', hire);
 app.use('/api/images', images);
 app.use('/api/bids', bids);
 app.use('/api/skills', skills);
 app.use('/api/proj-skills', projSkills);
+app.use('/api/session', sess);
 
 
 // catch 404 and forward to error handler

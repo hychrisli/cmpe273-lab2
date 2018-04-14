@@ -10,6 +10,7 @@ const handleRes = require('./handle-res');
 const kafkaClient = require('../kafka-client/client');
 const {
   FLC_TPC_USER,
+  FLC_TPC_SESSION,
   GET_ALL,
   GET_ONE,
   POST,
@@ -162,13 +163,28 @@ router.post('/login', function (req, res, next) {
     FLC_TPC_USER,
     GET_ONE,
     {username},
-    (err, doc) => {
+    (err, user) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else if (doc === null)
-        handleRes.sendNotFound(res, "No SUch User");
-      else if (!bcrypt.compareSync(req.body.password, doc.password))
+      else if (user === null)
+        handleRes.sendNotFound(res, "No Such User");
+      else if (!bcrypt.compareSync(req.body.password, user.password))
         handleRes.sendBadRequest(res, "Wrong Password");
-      else handleRes.sendDoc(res, resUser(doc))
+      else{
+        const token = jwt.sign({user}, key);
+        kafkaClient.make_request(
+          FLC_TPC_SESSION,
+          POST,
+          {
+            userId: user._id,
+            username,
+            jwt: token
+          },
+          (err) => {
+            if (err) handleRes.sendInternalSystemError(res, err);
+            else handleRes.sendDoc(res, 'bearer ' + token);
+          }
+        )
+      }
     });
 });
 
@@ -231,23 +247,8 @@ router.put('/:username', function (req, res) {
     (err, user) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else if (user === null) handleRes.sendNotFound(res, "Not Found");
-      else handleRes.sendDoc(res, resUser(user))
+      else handleRes.sendDoc(res, user)
     });
 });
-
-
-const resUser = (doc) => {
-  const token = jwt.sign({user: doc}, key);
-  return {
-    id: doc._id,
-    username: doc.username,
-    email: doc.email,
-    firstName: doc.firstName,
-    lastName: doc.lastName,
-    aboutMe: doc.aboutMe,
-    jwt: 'bearer ' + token
-  };
-};
-
 
 module.exports = router;

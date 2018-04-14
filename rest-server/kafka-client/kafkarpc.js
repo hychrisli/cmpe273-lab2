@@ -69,6 +69,7 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
   self = this;
 
   var consumer = new self.connection.getConsumer(resTopic);
+  const offset = new self.connection.getOffset();
   consumer.on('message', function (message) {
     console.log('REST Server Received: ', resTopic);
     var res = JSON.parse(message.value);
@@ -83,9 +84,30 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
       //delete the entry from hash
       delete self.requests[correlationId];
       //callback, no err
-      entry.callback(null, res.data);
+      if ( res.err === undefined || res.err === null)
+        entry.callback(null, res.data);
+      else {
+        console.log(res);
+        entry.callback(res.err);
+      }
     }
   });
+
+  consumer.on('error', (err) => {
+    console.log(err);
+  });
+
+  consumer.on('offsetOutOfRange', (topic)=>{
+    topic.maxNum = 2;
+    offset.fetch([topic], function (err, offsets) {
+      if (err) {
+        return console.error(err);
+      }
+      var min = Math.min.apply(null, offsets[topic.topic][topic.partition]);
+      consumer.setOffset(topic.topic, topic.partition, min);
+    });
+  });
+
   self.response_queue[resTopic] = consumer;
   return next();
 };

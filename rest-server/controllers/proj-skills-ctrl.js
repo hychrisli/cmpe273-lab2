@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const ProjectSkill = require('../models/project-skill');
 const handleRes = require('./handle-res');
+const passport = require('passport');
+require('../auth/passport')(passport);
+const {jwtDecode} = require('./lib');
 
+const kafkaClient = require('../kafka-client/client');
+const {
+  FLC_TPC_PROJECT_SKILL,
+  GET_ALL,
+  POST,
+} = require('../kafka-client/constants');
 
 /**
  * @swagger
@@ -24,16 +32,15 @@ const handleRes = require('./handle-res');
  *        description: project skills
  */
 router.get('/', (req, res) => {
-  const projectId = req.query.projectId;
-  let filter = {};
-  if (projectId !== undefined) {
-    filter.projectId = projectId;
-  }
-  ProjectSkill.find(filter, (err, docs) => {
-    if (err) handleRes.sendNotFound(res, err);
-    else handleRes.sendArray(res, docs);
-  })
 
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT_SKILL,
+    GET_ALL,
+    {projectId: req.query.projectId,},
+    (err, docs) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, docs);
+    });
 });
 
 /**
@@ -43,6 +50,8 @@ router.get('/', (req, res) => {
  *    description: Add a skill to project
  *    tags:
  *      - proj-skills
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -62,23 +71,25 @@ router.get('/', (req, res) => {
  *      201:
  *        description: skill added to project
  */
-router.post('/', (req, res) => {
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const user = jwtDecode(req.header('Authorization'));
   const projectId = req.body.projectId;
-  let skillIds = req.body.skillId;
-  if (!Array.isArray(skillIds))
-    skillIds = skillIds.split(',');
+  let skIds = req.body.skillId;
+  if (Array.isArray(skIds))
+    skIds = skIds.join();
 
-  projectSkills = [];
-  for (let i = 0; i < skillIds.length; i++) {
-    projectSkills.push({
+  kafkaClient.make_request(
+    FLC_TPC_PROJECT_SKILL,
+    POST,
+    {
       projectId,
-      skillId: skillIds[i]
+      skIdStr: skIds,
+      userId: user._id
+    },
+    (err, data) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, data);
     });
-  }
-  ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err) => {
-    if (err && err.code !== 11000) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendCreated(res);
-  });
 });
 
 module.exports = router;

@@ -1,7 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const Bid = require('../models/bid');
 const handleRes = require('./handle-res');
+const {jwtDecode} = require('./lib');
+const passport = require('passport');
+require('../auth/passport')(passport);
+
+const kafkaClient = require('../kafka-client/client');
+const {
+  FLC_TPC_BID,
+  GET_ALL,
+  GET_ONE,
+  DELETE,
+  POST
+} = require('../kafka-client/constants');
 
 
 /**
@@ -19,20 +30,24 @@ const handleRes = require('./handle-res');
  *        required: false
  *        type: string
  *        description: retrieve bids as bidder
+ *      - name: isActive
+ *        in: query
+ *        required: false
+ *        type: boolean
+ *        description: filter active ones
  *    responses:
  *      200:
  *        description: bids
  */
-router.get('/', (req, res) => {
-
-  const userId = req.query.userId;
-  let filter = {};
-  if (userId !== undefined) filter.userId = userId;
-
-  Bid.find(filter, (err, docs) => {
-    if (err) handleRes.sendNotFound(res, err);
-    else handleRes.sendArray(res, docs);
-  });
+router.get('/',(req, res) => {
+  kafkaClient.make_request(
+    FLC_TPC_BID,
+    GET_ALL,
+    {userId: req.query.userId, isActive: req.query.isActive},
+    (err, docs) => {
+      if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendArray(res, docs);
+    });
 });
 
 /**
@@ -41,7 +56,9 @@ router.get('/', (req, res) => {
  *  get:
  *    description: retrieve a bid
  *    tags:
- *       - bids
+ *      - bids
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -54,14 +71,18 @@ router.get('/', (req, res) => {
  *      200:
  *        description: a bid
  */
-router.get('/:bidId', function (req, res, next) {
+router.get('/:bidId', passport.authenticate('jwt', {session: false}), function (req, res, next) {
   const bidId = req.params.bidId;
   if ( bidId === undefined ) handleRes.sendBadRequest(res, "Invalid Bid GET Request");
   else
-    Bid.findOne({_id: bidId}, (err, doc) => {
-      if (err || doc === null) handleRes.sendNotFound(res, err);
-      else handleRes.sendDoc(res, doc);
-    });
+    kafkaClient.make_request(
+      FLC_TPC_BID,
+      GET_ONE,
+      {_id: bidId},
+      (err, data) => {
+        if (err || data === null) handleRes.sendNotFound(res, err);
+        else handleRes.sendDoc(res, data);
+      });
 });
 
 /**
@@ -70,22 +91,14 @@ router.get('/:bidId', function (req, res, next) {
  *  post:
  *    description: New bid for a project
  *    tags:
- *       - bids
+ *      - bids
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: userId
- *        description: user to bid the project
- *        in: formData
- *        required: true
- *        type: string
  *      - name: projectId
  *        description: Id of the project
- *        in: formData
- *        required: true
- *        type: string
- *      - name: employerId
- *        description: Id of the employer
  *        in: formData
  *        required: true
  *        type: string
@@ -103,12 +116,22 @@ router.get('/:bidId', function (req, res, next) {
  *      201:
  *        description: bid created
  */
-router.post('/', (req, res) => {
-  const bid = new Bid(req.body);
-  bid.save((err) => {
-    if (err) handleRes.sendInternalSystemError(res, err);
-    else handleRes.sendCreated(res);
-  })
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const user = jwtDecode(req.header('Authorization'));
+  const form = req.body;
+  form.userId = user._id;
+
+  kafkaClient.make_request(
+    FLC_TPC_BID,
+    POST,
+    {form},
+    (err, data) => {
+      if (err) {
+        if ( err.code === 11000 ) handleRes.sendBadRequest(res, "User has already bid on this project");
+        else handleRes.sendInternalSystemError(res, err);
+      }
+      else handleRes.sendDoc(res, data);
+    });
 });
 
 /**
@@ -117,7 +140,9 @@ router.post('/', (req, res) => {
  *  delete:
  *    description: delete a bid
  *    tags:
- *       - bids
+ *      - bids
+ *    security:
+ *      - bearer: []
  *    produces:
  *      - application/json
  *    parameters:
@@ -131,15 +156,21 @@ router.post('/', (req, res) => {
  *        description: a bid
  */
 router.delete('/:bidId', function (req, res) {
+  const user = jwtDecode(req.header('Authorization'));
   const bidId = req.params.bidId;
   if ( bidId === undefined ) handleRes.sendBadRequest(res, "Invalid Bid Delete Request");
   else
-    Bid.remove({_id: bidId}, (err) => {
-      if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendOK(res);
-    });
+    kafkaClient.make_request(
+      FLC_TPC_BID,
+      DELETE,
+      {_id: bidId, userId: user._id},
+      (err, data) => {
+        if (err) handleRes.sendInternalSystemError(res, err);
+        else {
+          if (data.n === 0) handleRes.sendOK(res, "Bid doesn't exist");
+          else handleRes.sendOK(res, "Bid deleted");
+        }
+      });
 });
-
-
 
 module.exports = router;

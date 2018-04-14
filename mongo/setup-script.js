@@ -2,27 +2,32 @@
 // User
 db.User.drop();
 db.createCollection('User');
-db.User.insert({
+db.User.insert([
+  {
   username: 'xyz',
-  firstName: '',
-  lastName: '',
+  firstName: 'Bill',
+  lastName: 'Superman',
   password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
   email: 'xyz@email.com',
-  image: 'xyz_profile02.jpg',
-  imageUrl: 'http://localhost:5000/api/images/xyz',
   aboutMe: "",
-
-});
-db.User.insert({
-  username: 'abc',
-  firstName: 'Chris',
-  lastName: 'Li',
-  password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
-  email: 'abc@world.com',
-  image: 'abc_profile01.jpg',
-  imageUrl: 'http://localhost:5000/api/images/abc',
-  aboutMe: "This is Me",
-});
+  },
+  {
+    username: 'abc',
+    firstName: 'Chris',
+    lastName: 'Li',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'abc@world.com',
+    aboutMe: "This is Me",
+  },
+  {
+    username: 'wer',
+    firstName: 'Walter',
+    lastName: 'Smith',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'walter@world.com',
+    aboutMe: "Hi, y'all",
+  },
+]);
 
 // Skill
 db.Skill.drop();
@@ -65,23 +70,63 @@ db.UserSkill.insert([
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Java'})._id.str,
+    skillName: 'Java'
   },
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     userId: db.User.findOne({username: 'xyz'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Spark'})._id.str,
+    skillName: 'Spark'
+  },
+  {
+    userId: db.User.findOne({username: 'xyz'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Oracle'})._id.str,
+    skillName: 'Oracle'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'AWS'})._id.str,
+    skillName: 'AWS'
   },
   {
     userId: db.User.findOne({username: 'abc'})._id.str,
     skillId: db.Skill.findOne({skillName: 'GCP'})._id.str,
-  }
+    skillName: 'GCP'
+  },
+  {
+    userId: db.User.findOne({username: 'abc'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'AJAX'})._id.str,
+    skillName: 'AJAX'
+  },
+  {
+    userId: db.User.findOne({username: 'abc'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'C++'})._id.str,
+    skillName: 'C++'
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Linux'})._id.str,
+    skillName: 'Linux'
+  },
 ]);
 
 
@@ -95,7 +140,8 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     minBudget: 300.0,
     maxBudget: 400.0,
-    startDate: new Date('2018-01-23')
+    startDate: new Date('2018-01-23'),
+    status: 0,
   },
   {
     title: 'project 2',
@@ -103,7 +149,8 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     minBudget: 400.0,
     maxBudget: 600.0,
-    startDate: new Date('2017-12-24')
+    startDate: new Date('2017-12-24'),
+    status: 0,
   },
   {
     title: 'project 3',
@@ -111,33 +158,63 @@ db.Project.insert([
     employerId: db.User.findOne({username: 'abc'})._id.str,
     minBudget: 500.0,
     maxBudget: 800.0,
-    startDate: new Date('2018-02-12')
+    startDate: new Date('2018-02-12'),
+    status: 0,
+  },
+  {
+    title: 'project 4',
+    description: 'Here again project 3',
+    employerId: db.User.findOne({username: 'wer'})._id.str,
+    minBudget: 540.0,
+    maxBudget: 1200.0,
+    startDate: new Date('2018-03-12'),
+    status: 0,
   }
 ]);
 
 // Project Skill
-db.ProjctSkill.drop();
+db.ProjectSkill.drop();
 db.createCollection('ProjectSkill');
 db.ProjectSkill.insert([
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
-    skillId: db.Skill.findOne({skillName: 'Java'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'C++'})._id.str,
+    skillName: 'C++'
   },
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
     skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
+  },
+  {
+    projectId: db.Project.findOne({title: 'project 1'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Spark'})._id.str,
+    skillName: 'Spark'
+  },
+  {
+    projectId: db.Project.findOne({title: 'project 3'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Oracle'})._id.str,
+    skillName: 'Oracle'
+  },
+  {
+    projectId: db.Project.findOne({title: 'project 3'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
   },
   {
     projectId: db.Project.findOne({title: 'project 3'})._id.str,
     skillId: db.Skill.findOne({skillName: 'AWS'})._id.str,
+    skillName: 'AWS'
   },
   {
     projectId: db.Project.findOne({title: 'project 2'})._id.str,
     skillId: db.Skill.findOne({skillName: 'GCP'})._id.str,
+    skillName: 'GCP'
   }
 ]);
 
@@ -155,14 +232,34 @@ db.Bid.insert([
     isActive: true,
   },
   {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    projectId: db.Project.findOne({title: 'project 3'})._id.str,
+    employerId: db.User.findOne({username: 'abc'})._id.str,
+    bidPrice: 700,
+    bidDays: 100,
+    isActive: true,
+  },
+  {
     userId: db.User.findOne({username: 'abc'})._id.str,
     projectId: db.Project.findOne({title: 'project 2'})._id.str,
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     bidPrice: 350,
     bidDays: 60,
     isActive: true
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    projectId: db.Project.findOne({title: 'project 2'})._id.str,
+    employerId: db.User.findOne({username: 'xyz'})._id.str,
+    bidPrice: 430,
+    bidDays: 65,
+    isActive: true
   }
 ]);
+
+db.Session.drop();
+db.createCollection('Session');
+
 
 // image
 db.Image.drop();

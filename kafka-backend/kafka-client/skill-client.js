@@ -31,3 +31,11 @@ skillConsumer.on('message', function (message) {
       });
   }
 });
+
+skillConsumer.on('error', (err) => {
+  console.log(err);
+});
+
+skillConsumer.on('offsetOutOfRange', (topic)=>{
+  handler.handleOutOfRange(topic, skillConsumer);
+});
