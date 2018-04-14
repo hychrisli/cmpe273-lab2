@@ -19,7 +19,7 @@ exports.handlePostUserSkills = (req, cb) => {
       for (let i = 0; i < data.length; i++) {
         userSkills.push({
           userId: req.userId,
-          skillId: data[i]._id,
+          skillId: data[i]._id.str,
           skillName: data[i].skillName
         });
       }

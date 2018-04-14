@@ -56,18 +56,6 @@ router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req,
         if (err) handleRes.sendInternalSystemError(res, err);
         else handleRes.sendDoc(res, data);
       });
-
-    /*    const project_id = req.params.project_id;
-        const hirePromise = projDao.update(Number(project_id), req.body);
-        const bidPromise = BidDao.update({project_id}, {is_active: 'false'});
-
-        Promise.all([hirePromise, bidPromise])
-          .then(() => {
-            res.status(200).send(JSON.stringify({res: "Hire Success"}));
-          }).catch(err => {
-          console.log(error);
-          res.status(500).send(err);
-        });*/
   }
 );
 

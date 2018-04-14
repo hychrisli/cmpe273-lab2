@@ -17,6 +17,7 @@ import {ProjList, ProjEdit, MyProjCreate, ProjShow} from './projects';
 import {BidList, BidShow} from './bids';
 import {SkillList, SkillCreate} from './skills';
 import {ProjSkillList, MyProjSkillCreate} from './proj-skills'
+import {MatchProjList} from './proj-match'
 import {ProjFileList, MyProjFileCreate} from './proj-files'
 import {UserList, UserShow} from './users'
 import {UserSkillList,MySkillCreate} from './user-skills'
@@ -105,6 +106,9 @@ class Dashboard extends Component {
                       show={ProjShow}
                       edit={ProjEdit}
                       create={MyProjCreate}
+            />
+            <Resource name={'match'}
+                      list={MatchProjList}
             />
             <Resource name={'bids'}
                       list={BidList}

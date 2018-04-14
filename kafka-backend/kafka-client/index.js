@@ -1,6 +1,7 @@
 require('./bid-client');
 require('./hire-client');
 require('./image-client');
+require('./match-client');
 require('./project-client');
 require('./project-skill-client');
 require('./skill-client');

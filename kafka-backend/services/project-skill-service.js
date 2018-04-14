@@ -30,7 +30,7 @@ exports.handlePostProjectSkills = (req, cb) =>{
           for (let i = 0; i < skIds.length; i++) {
             projectSkills.push({
               projectId: req.projectId,
-              skillId: data[i]._id,
+              skillId: data[i]._id.str,
               skillName: data[i].skillName
             });
           }

@@ -21,6 +21,10 @@ const Menu = ({onMenuTap, translate, logout, client}) => (
       primaryText={"Projects"}
       onClick={onMenuTap}/>
     <MenuItemLink
+      to={"/match"}
+      primaryText={"match"}
+      onClick={onMenuTap}/>
+    <MenuItemLink
       to={"/bids?filter={}"}
       primaryText={"Bids"}
       onClick={onMenuTap}/>
