@@ -71,34 +71,4 @@ exports.handlePostProjectSkills = (req, cb) =>{
     .catch(err => {
       if (err) cb(err);
     });
-/*
-  Project.findOne({_id: req.projectId, employerId: req.userId}, (err, data) => {
-    if (err) cb (err);
-    else if ( data === null ) cb("Invalid Project");
-    else {
-      const skIds = req.skIdStr.split(',');
-
-      Skill.find({_id: {$in: skIds}}, (err, data) => {
-        if (err) cb(err);
-        else if (data === null) cb("Invalid Skills");
-        else {
-          const projectSkills = [];
-          const skills = [];
-
-          for (let i = 0; i < skIds.length; i++) {
-            projectSkills.push({
-              projectId: req.projectId,
-              skillId: data[i]._id.str,
-              skillName: data[i].skillName
-            });
-            skills.push(data[i].skillName);
-          }
-          ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err, data) => {
-            if (err && err.code !== 11000) cb(err);
-            else cb(null, projectSkills);
-          });
-        }
-      });
-    }
-  });*/
 };
