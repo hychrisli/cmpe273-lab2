@@ -17,6 +17,8 @@ import { connect } from 'react-redux';
 const ProjFilter = (props) => (
   <Filter {...props}>
     <TextInput label={"Employer ID"} source={"employerId"}/>
+    <TextInput label={"Project Title"} source={"title"}/>
+    <TextInput label={"Skill"} source={"skill"}/>
   </Filter>
 );
 

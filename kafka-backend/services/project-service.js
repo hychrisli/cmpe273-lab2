@@ -6,11 +6,14 @@ const handler = require('./handler');
 
 exports.handleGetProjects = (req, cb) =>{
   console.log(req);
-  const filter = {
+  let filter = {
     employerId: req.employerId,
     status: req.status
   };
-  Project.find(JSON.parse(JSON.stringify(filter)),
+  filter = JSON.parse(JSON.stringify(filter));
+  if ( req.title !== undefined ) filter.title = new RegExp(req.title, 'i');
+
+  Project.find(filter,
     (err, data) => {handler.genericCallback(err, data, cb)})
 };
 
