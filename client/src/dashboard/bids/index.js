@@ -1,12 +1,12 @@
 import React from 'react';
 import {TextField, ReferenceField, ShowButton, BooleanField, NumberField} from 'admin-on-rest';
 import {List, Datagrid, Show, SimpleShowLayout, Filter, TextInput} from 'admin-on-rest';
-import DelButton from './button-delete'
-import HireButton from './button-hire'
+import ActionButton from './button-action'
 
 const BidFilter = (props) => (
   <Filter {...props}>
     <TextInput label={"Bidder ID"} source={"userId"}/>
+    <TextInput label={"Project ID"} source={"projectId"}/>
   </Filter>
 );
 
@@ -23,9 +23,7 @@ export const BidList = (props) => (
       <BooleanField source={"isActive"}/>
       <NumberField source={"bidPrice"}/>
       <NumberField source={"bidDays"}/>
-      <ShowButton/>
-      <HireButton/>
-      <DelButton/>
+      <ActionButton {...props}/>
     </Datagrid>
   </List>
 );

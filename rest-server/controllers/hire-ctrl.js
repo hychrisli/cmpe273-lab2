@@ -14,7 +14,7 @@ const {
 
 /**
  * @swagger
- * /hire/{project_id}:
+ * /hire/{projectId}:
  *  put:
  *    description: update a project
  *    tags:
@@ -24,12 +24,12 @@ const {
  *    produces:
  *      - application/json
  *    parameters:
- *      - name: project_id
+ *      - name: projectId
  *        description: project ID
  *        in: path
  *        required: true
  *        type: string
- *      - name: chosen_bid
+ *      - name: chosenBid
  *        description: bid that is chosen for the project
  *        in: formData
  *        required: true
@@ -39,18 +39,18 @@ const {
  *        description: project updated
  */
 
-router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.put('/:projectId', passport.authenticate('jwt', {session: false}), (req, res) => {
     const user = jwtDecode(req.header('Authorization'));
 
-    console.log(req.params.project_id, req.body.chosen_id);
+    console.log(req.params.projectId, req.body.chosenBid);
 
     kafkaClient.make_request(
       FLC_TPC_HIRE,
       PUT,
       {
         employerId: user._id,
-        projectId: req.params.project_id,
-        chosenBid: req.body.chosen_bid,
+        projectId: req.params.projectId,
+        chosenBid: req.body.chosenBid,
       },
       (err, data) => {
         if (err) handleRes.sendInternalSystemError(res, err);

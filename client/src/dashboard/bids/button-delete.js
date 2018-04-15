@@ -45,18 +45,29 @@ class DelButton extends Component{
     if (this.state.isChosen){
       showNotification('Cannot Delete Chosen Bid')
     } else {
-      const url = `${process.env.REACT_APP_API_URL}/bids/`+record.id;
-      fetch(url, {
-        method:'DELETE'
-      })
-        .then(() => {
-          showNotification('Bid Deleted');
-          push('/projects');
+
+      const storedToken = localStorage.getItem('token');
+      if ( storedToken ) {
+        const token = JSON.parse(storedToken);
+
+        const url = `${process.env.REACT_APP_API_URL}/bids/` + record.id;
+        fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
         })
-        .catch((e) => {
-          console.error(e);
-          showNotification('Failed to delete');
-        })
+          .then(() => {
+            showNotification('Bid Deleted');
+            window.location.reload();
+            // push('/projects');
+          })
+          .catch((e) => {
+            console.error(e);
+            showNotification('Failed to delete');
+          })
+      }
     }
   };
 
@@ -68,7 +79,7 @@ class DelButton extends Component{
       }
     } = this.props;
 
-    const isDisabled = !(record.isActive === 'true' && token.id === record.userId);
+    const isDisabled = !(record.isActive === true && token.id === record.userId);
     return <FlatButton label={"Delete"} disabled={ isDisabled } onClick={this.handleClick}/>
   }
 }
