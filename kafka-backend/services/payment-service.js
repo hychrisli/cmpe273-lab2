@@ -6,9 +6,11 @@ const handler = require('./handler');
 
 exports.handleGetPayments = (req, cb) => {
   // req: {payerId, payeeId}
+  console.log(req);
   let filter = {};
   filter.payerId = req.payerId;
   filter.payeeId = req.payeeId;
+  console.log(JSON.parse(JSON.stringify(filter)));
   Payment.find(JSON.parse(JSON.stringify(filter)), (err, data) => handler.genericCallback(err, data, cb))
 };
 

@@ -36,10 +36,12 @@ const {
  */
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   const user = jwtDecode(req.header('Authorization'));
+  console.log(req.query);
 
-  const isPayer = req.query.isPayer === undefined ? true : req.query.isPayer;
+  let isPayer = req.query.isPayer === undefined ? 'true' : req.query.isPayer;
+  if ( isPayer instanceof Boolean ) isPayer = isPayer.toString()
   let filter = {};
-  if (isPayer) filter.payerId = user._id;
+  if (isPayer === 'true' ) filter.payerId = user._id;
   else filter.payeeId = user._id;
 
   kafkaClient.make_request(
