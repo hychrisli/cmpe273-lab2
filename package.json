@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "client": "cd client && BROWSER=none npm start",
-    "server": "cd server && npm start",
-    "start": "concurrently --kill-others-on-fail \"npm run client\" \"npm run server\" "
+    "rest-server": "cd rest-server && npm start",
+    "kafka-backend": "cd kafka-backend && npm start",
+    "start": "concurrently --kill-others-on-fail \"npm run client\" \"npm run rest-server\"  \"npm run kafka-backend\""
   },
   "devDependencies": {
     "concurrently": "^1.0.0"
