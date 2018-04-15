@@ -7,14 +7,15 @@ exports.handleGetProjects = (req, cb) =>{
   console.log(req);
   let filter = {
     employerId: req.employerId,
-    status: req.status
+    status: req.status,
+    chosenBidder: req.chosenBidder
   };
   filter = JSON.parse(JSON.stringify(filter));
   if ( req.title !== undefined ) filter.title = new RegExp(req.title, 'i');
   if ( req.skill !== undefined ) filter.skills = new RegExp(req.skill, 'i');
 
   Promise.all([
-    Project.count({}),
+    Project.count(filter),
     Project.find(filter).skip(req.pagin.skip).limit(req.pagin.limit)
   ])
     .then(([cnt, projs]) => {

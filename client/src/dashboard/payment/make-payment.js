@@ -44,6 +44,7 @@ class MakePayment extends Component{
   }
 
   submit = (e) => {
+
     e.preventDefault();
     const {goBack, showNotification, project} = this.props;
     const url = `${process.env.REACT_APP_API_URL}/payment/`;

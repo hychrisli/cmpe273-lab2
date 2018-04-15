@@ -20,6 +20,7 @@ import {detailStyle,buttonStyle, dividerStyle, MyDivider} from '../lib/style'
 const ProjFilter = (props) => (
   <Filter {...props}>
     <TextInput label={"Employer ID"} source={"employerId"}/>
+    <TextInput label={"Chosen Bidder"} source={"chosenBidder"}/>
     <TextInput label={"Project Title"} source={"title"}/>
     <TextInput label={"Skill"} source={"skill"}/>
     <SelectInput source="status" choices={[

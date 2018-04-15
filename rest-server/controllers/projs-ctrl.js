@@ -31,6 +31,11 @@ const {
  *        required: false
  *        type: string
  *        description: retrieve projects as employer
+ *      - name: chosenBidder
+ *        in : query
+ *        required: false
+ *        type: string
+ *        description: retrieve projects as employer
  *      - name: status
  *        in : query
  *        required: false
@@ -68,6 +73,7 @@ router.get('/', (req, res) => {
     GET_ALL,
     {
       employerId: req.query.employerId,
+      chosenBidder: req.query.chosenBidder,
       status,
       pagin,
       title: req.query.title,
