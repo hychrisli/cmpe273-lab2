@@ -23,6 +23,7 @@ var projSkills = require('./controllers/proj-skills-ctrl');
 var projFiles = require('./controllers/proj-files-ctrl');
 var sess = require('./controllers/session-ctrl');
 var balance = require('./controllers/balance-ctrl');
+var payment = require('./controllers/payment-ctrl');
 
 var app = express();
 
@@ -64,6 +65,7 @@ app.use('/api/proj-skills', projSkills);
 app.use('/api/proj-files', projFiles);
 app.use('/api/session', sess);
 app.use('/api/balance', balance);
+app.use('/api/payment', payment);
 
 
 // catch 404 and forward to error handler
