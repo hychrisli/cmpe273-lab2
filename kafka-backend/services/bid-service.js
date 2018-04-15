@@ -1,5 +1,6 @@
 const Bid = require('../models/bid');
 const Project = require('../models/project');
+const User = require('../models/user');
 const handler = require('./handler');
 
 
@@ -16,7 +17,21 @@ exports.handleGetBids = (req, cb) =>{
 
 exports.handleGetBid = (req, cb) =>{
   Bid.findOne({_id: req._id},
-    (err, data) => {handler.genericCallback(err, data, cb)});
+    (err, bid) => {
+      if (err) cb(err);
+      else if (bid === null) cb(null, bid);
+      else {
+        User.findOne({_id: bid.userId}, (err, user) => {
+          if (err) cb(err);
+          else if (user === null) cb(null, bid);
+          else {
+            let data = JSON.parse(JSON.stringify(bid));
+            data.username = user.username;
+            cb(null, data)
+          }
+        })
+      }
+    });
 };
 
 exports.handlePostBid = (req, cb) =>{

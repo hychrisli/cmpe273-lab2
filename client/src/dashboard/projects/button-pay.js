@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { push as pushAction } from 'react-router-redux';
 import {setProject} from "./actions";
 
-class BidButton extends Component{
+class PayButton extends Component{
 
   static propTypes = {
     push: PropTypes.func,
@@ -16,18 +16,12 @@ class BidButton extends Component{
 
   handleClick =  () => {
     this.props.setProject(this.props.record);
-    this.props.push("/bids/create");
+    this.props.push("/pay");
   };
 
   render() {
-    const {
-      record,
-      client:{
-        token
-      }
-    } = this.props;
-    const isDisabled = record.employerId === token.id || record.status > 0;
-    return <FlatButton label={"Bid"} disabled={isDisabled} onClick={this.handleClick}/>
+    const {record} = this.props;
+    return <FlatButton {...this.props} label={"Pay"} disabled={record.status !== 1} onClick={this.handleClick}/>
   }
 }
 
@@ -36,5 +30,5 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-  push: pushAction,setProject
-})(BidButton);
+  push: pushAction, setProject
+})(PayButton);

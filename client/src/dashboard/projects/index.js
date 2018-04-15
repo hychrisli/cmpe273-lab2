@@ -8,6 +8,7 @@ import { CardActions } from 'material-ui/Card';
 import BidButton from './button-bid'
 import EditButton from './button-edit'
 import ListActionButton from './buttion-list-action';
+import ShowActionButton from './button-show-action';
 import AddSkillButton from '../proj-skills/button-add-skill';
 import UploadButton from '../proj-files/button-upload';
 import ListFilesButton from '../proj-files/button-list-files'
@@ -133,7 +134,7 @@ export const ProjShow = (props) => {
       <MyDivider />
       <ListBidsButton {...props} style={buttonStyle}/>
       <ListFilesButton {...props} style={buttonStyle}/>
-      <BidButton {...props} style={buttonStyle}/>
+      <ShowActionButton {...props} style={buttonStyle}/>
     </SimpleShowLayout>
   </Show>
 )};
