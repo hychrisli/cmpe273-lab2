@@ -4,8 +4,10 @@ const handler = require('./handler');
 
 
 exports.handleGetBids = (req, cb) =>{
+  console.log(req);
   const filter = {
     userId: req.userId,
+    projectId: req.projectId,
     isActive:req.isActive
   };
   Bid.find(JSON.parse(JSON.stringify(filter)),

@@ -12,6 +12,7 @@ const ProjectSchema = new Schema({
   skills: String,
   status: {type: Number, default: 0},
   chosenBid: String,
+  chosenBidder: String,
 });
 
 module.exports = mongoose.model('Project', ProjectSchema, 'Project');

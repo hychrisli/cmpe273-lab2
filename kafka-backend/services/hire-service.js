@@ -16,8 +16,8 @@ exports.handleHire = (req, cb) =>{
       else if ( bid === null ) cb(new Error('Invalid BId'));
       else {
         Promise.all([
-          Project.update({_id: req.projectId}, {$set: {status: 1, chosenBid: bid._id}}),
-          Bid.update({projectId: req.projectId}, {$set: {isActive: false}})
+          Project.update({_id: req.projectId}, {$set: {status: 1, chosenBid: bid._id, chosenBidder: bid.userId}}),
+          Bid.update({projectId: req.projectId}, {$set: {isActive: false}}, {multi: true})
         ])
           .then( data => {
             cb(null, data);
