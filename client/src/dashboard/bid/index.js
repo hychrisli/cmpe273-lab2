@@ -40,7 +40,7 @@ class BidCreate extends Component {
     const {
       handleSubmit,
       submitting,
-      project: {title, max_budget, min_budget},
+      project: {title, maxBudget, minBudget},
       bid: {
         bidding,
         messages,
@@ -54,13 +54,6 @@ class BidCreate extends Component {
           <h1>Bidding</h1>
           <h3>Project: {title} </h3>
           <Field
-            name={"userId"}
-            type={"text"}
-            component={"input"}
-            label={"User ID"}
-            disabled={true}
-          />
-          <Field
             name={"projectId"}
             type={"text"}
             component={"input"}
@@ -68,17 +61,10 @@ class BidCreate extends Component {
             disabled={true}
           />
           <Field
-            name={"employerId"}
-            type={"text"}
-            component={"input"}
-            label={"Employer ID"}
-            disabled={true}
-          />
-          <Field
             name={"bidPrice"}
             type={"number"}
             component={renderField}
-            label={"Bid Price: $" + min_budget + " ~ $" + max_budget}
+            label={"Bid Price: $" + minBudget + " ~ $" + maxBudget}
           />
           <Field
             name={"bidDays"}

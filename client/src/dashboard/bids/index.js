@@ -1,5 +1,5 @@
 import React from 'react';
-import {TextField, ReferenceField, ShowButton, BooleanField} from 'admin-on-rest';
+import {TextField, ReferenceField, ShowButton, BooleanField, NumberField} from 'admin-on-rest';
 import {List, Datagrid, Show, SimpleShowLayout, Filter, TextInput} from 'admin-on-rest';
 import DelButton from './button-delete'
 import HireButton from './button-hire'
@@ -20,9 +20,9 @@ export const BidList = (props) => (
       <ReferenceField label={"Bidder"} source="userId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
-      <TextField source={"isActive"}/>
-      <TextField source={"bidPrice"}/>
-      <TextField source={"bidDays"}/>
+      <BooleanField source={"isActive"}/>
+      <NumberField source={"bidPrice"}/>
+      <NumberField source={"bidDays"}/>
       <ShowButton/>
       <HireButton/>
       <DelButton/>

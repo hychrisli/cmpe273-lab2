@@ -13,7 +13,7 @@ class ListFilesButton extends Component{
   };
 
   handleClick =  () => {
-    this.props.push('/proj-files?filter={"project_id"%3A"'+ this.props.record.id+'"}');
+    this.props.push('/proj-files?filter={"projectId"%3A"'+ this.props.record.id+'"}');
   };
 
   render() {

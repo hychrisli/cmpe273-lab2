@@ -25,7 +25,7 @@ class EditButton extends Component{
       }
     } = this.props;
 
-    return <FlatButton label={"Edit"} disabled={record.employer_id !== token.id} onClick={this.handleClick}/>
+    return <FlatButton label={"Edit"} disabled={record.employerId !== token.id} onClick={this.handleClick}/>
   }
 }
 

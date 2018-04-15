@@ -2,7 +2,7 @@ import React from 'react';
 import {TextField, ReferenceField} from 'admin-on-rest';
 import {TextInput} from 'admin-on-rest';
 import {List, Datagrid, Filter} from 'admin-on-rest';
-import {SimpleForm, Create, Show, SelectArrayInput} from 'admin-on-rest';
+import {SimpleForm, Create, SelectArrayInput} from 'admin-on-rest';
 import {connect} from "react-redux";
 import NotAuthorized from '../lib/not-authorized'
 
@@ -30,7 +30,6 @@ export const ProjSkillList = (props) => (
 const ProjSkillCreate = (props) => {
   const {
     project,
-    client:{token:{username}},
     skillChoices
   } = props;
 

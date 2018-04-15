@@ -17,7 +17,13 @@ exports.handleGetProjects = (req, cb) =>{
     Project.count({}),
     Project.find(filter).skip(req.pagin.skip).limit(req.pagin.limit)
   ])
-    .then(([cnt, projects]) => {
+    .then(([cnt, projs]) => {
+
+      let projects = JSON.parse(JSON.stringify(projs));
+      for ( let i =0; i < projects.length; i++){
+        projects[i].range = projects[i].minBudget + '~' + projects[i].maxBudget
+      }
+
       const data = {cnt, projects};
       cb(null, data);
     })

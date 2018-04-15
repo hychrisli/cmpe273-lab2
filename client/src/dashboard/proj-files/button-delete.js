@@ -30,8 +30,13 @@ class DelButton extends Component{
   };
 
   render() {
-    const {record,client:{token}} = this.props;
-    return <FlatButton label={"Delete"} onClick={this.handleClick}/>
+    const {
+      record,
+      client:{
+        token,
+      }
+    } = this.props;
+    return <FlatButton label={"Delete"} disabled={record.userId !== token.id} onClick={this.handleClick}/>
   }
 }
 

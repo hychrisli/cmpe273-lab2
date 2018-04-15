@@ -5,17 +5,24 @@ import {BID_SUCCESS, BIDDING, BID_ERROR} from './constants';
 const bidUrl = `${process.env.REACT_APP_API_URL}/bids`;
 
 function bidApi(body) {
-  return fetch(bidUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body)
-  })
-    .then(handleApiErrors)
-    .then(response => response.json())
-    .then(json=>json)
-    .catch(error => {throw error})
+  const storedToken = localStorage.getItem('token');
+  if ( storedToken ) {
+    const token = JSON.parse(storedToken);
+    return fetch(bidUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      },
+      body: JSON.stringify(body)
+    })
+      .then(handleApiErrors)
+      .then(response => response.json())
+      .then(json => json)
+      .catch(error => {
+        throw error
+      })
+  }
 }
 
 function* bidFlow(action) {
