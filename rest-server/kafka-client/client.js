@@ -10,7 +10,7 @@ function make_request(topic, type, msg_payload, callback) {
       callback(err);
     }
     else {
-      console.log("response", response);
+      //console.log("response", response);
       callback(null, response);
     }
   });

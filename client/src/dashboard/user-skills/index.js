@@ -1,17 +1,10 @@
 import React from 'react';
-import {TextField, ReferenceField, CardActions, CreateButton} from 'admin-on-rest';
-import {TextInput, RefreshButton} from 'admin-on-rest';
+import {TextField, ReferenceField} from 'admin-on-rest';
+import {TextInput} from 'admin-on-rest';
 import {List, Datagrid, Filter} from 'admin-on-rest';
-import {SimpleForm, Create, Show, SelectArrayInput} from 'admin-on-rest';
+import {SimpleForm, Create, SelectArrayInput} from 'admin-on-rest';
 import {connect} from "react-redux";
 import BackToSkills from './back-to-profile'
-import AddSkillButton from './button-add-skill';
-
-const cardActionStyle = {
-  zIndex: 2,
-  display: 'inline-block',
-  float: 'right',
-};
 
 const UserFilter = (props) => (
   <Filter {...props}>

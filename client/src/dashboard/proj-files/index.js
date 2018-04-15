@@ -1,9 +1,8 @@
 import React from 'react';
-import {TextField, ReferenceField, FileField} from 'admin-on-rest';
-import {TextInput, DisabledInput, FileInput, NumberInput} from 'admin-on-rest';
+import {TextField, ReferenceField} from 'admin-on-rest';
+import {TextInput} from 'admin-on-rest';
 import {List, Datagrid, Filter} from 'admin-on-rest';
-import {SimpleForm, Create, Show, SelectArrayInput} from 'admin-on-rest';
-import {ViewTitle} from 'admin-on-rest';
+import {Create} from 'admin-on-rest';
 import DownloadButton from './button-download'
 import DeleteButton from './button-delete'
 import NotAuthorized from '../lib/not-authorized'
@@ -12,7 +11,7 @@ import FileUpload from './upload-file';
 
 const ProjFilter = (props) => (
   <Filter {...props}>
-    <TextInput label={"Project Id"} source={"project_id"}/>
+    <TextInput label={"Project Id"} source={"projectId"}/>
   </Filter>
 );
 
@@ -20,13 +19,13 @@ export const ProjFileList = (props) => (
   <List title="Files" {...props} filters={<ProjFilter/>}>
     <Datagrid>
       <TextField source="id"/>
-      <ReferenceField label={"Project"} source="project_id" reference={"projects"} linkType="show">
+      <ReferenceField label={"Project"} source="projectId" reference={"projects"} linkType="show">
         <TextField source={"title"}/>
       </ReferenceField>
-      <ReferenceField label={"Project"} source="project_id" reference={"projects"} linkType="show">
-        <TextField source={"employer"} label={"Owner"}/>
+      <ReferenceField label={"Uploader"} source="userId" reference={"users"} linkType="show">
+        <TextField source={"username"}/>
       </ReferenceField>
-      <TextField source={"file_name"}/>
+      <TextField source={"fileName"}/>
       <DeleteButton/>
       <DownloadButton/>
     </Datagrid>
@@ -36,7 +35,6 @@ export const ProjFileList = (props) => (
 
 const ProjFileUpload = (props) => {
   const {project} = props;
-  const url = `${process.env.REACT_APP_API_URL}/proj-files/`;
   if (project.id === undefined)
     return (
       <NotAuthorized/>

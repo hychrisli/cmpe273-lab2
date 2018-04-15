@@ -16,6 +16,7 @@ import Menu from './menu';
 import {ProjList, ProjEdit, MyProjCreate, ProjShow} from './projects';
 import {BidList, BidShow} from './bids';
 import {SkillList, SkillCreate} from './skills';
+import {PaymentList} from './payment'
 import {ProjSkillList, MyProjSkillCreate} from './proj-skills'
 import {MatchProjList} from './proj-match'
 import {ProjFileList, MyProjFileCreate} from './proj-files'
@@ -98,7 +99,7 @@ class Dashboard extends Component {
             customSagas={[IndexSaga]}
             menu={Menu}
             initialState={{'client': this.props.client}}
-            title={"Freelancer:"}
+            title={"Freelancer"}
             customRoutes={customRoutes}
             restClient={this.restClient}>
             <Resource name='projects'
@@ -117,6 +118,9 @@ class Dashboard extends Component {
             <Resource name={'skills'}
                       list={SkillList}
                       create={SkillCreate}
+            />
+            <Resource name={'payment'}
+                      list={PaymentList}
             />
             <Resource name={'proj-skills'}
                       list={ProjSkillList}

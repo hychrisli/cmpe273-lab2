@@ -30,6 +30,11 @@ const {
  *        required: false
  *        type: string
  *        description: retrieve bids as bidder
+ *      - name: projectId
+ *        in : query
+ *        required: false
+ *        type: string
+ *        description: retrieve bids for a project
  *      - name: isActive
  *        in: query
  *        required: false
@@ -43,7 +48,11 @@ router.get('/',(req, res) => {
   kafkaClient.make_request(
     FLC_TPC_BID,
     GET_ALL,
-    {userId: req.query.userId, isActive: req.query.isActive},
+    {
+      userId: req.query.userId,
+      projectId: req.query.projectId,
+      isActive: req.query.isActive
+    },
     (err, docs) => {
       if (err) handleRes.sendInternalSystemError(res, err);
       else handleRes.sendArray(res, docs);

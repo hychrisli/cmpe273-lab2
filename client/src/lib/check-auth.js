@@ -1,5 +1,4 @@
 import React from 'react'
-import {setClient} from '../client/actions'
 import {Route, Redirect} from 'react-router-dom'
 import Dashboard from "../dashboard";
 import Login from '../login';
@@ -48,9 +47,6 @@ export function checkWidgetAuthorization({dispatch, getState}){
 function checkAuthorization(dispatch){
   const storedToken = localStorage.getItem('token');
 
-  if ( storedToken ) {
-    const token = JSON.parse(storedToken);
-    return true;
-  }
-  return false;
+  if ( storedToken ) return true;
+  else return false;
 }

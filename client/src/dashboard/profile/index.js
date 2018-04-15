@@ -121,7 +121,7 @@ class Profile extends Component {
     return (
       <div className={"profile"}>
         <form className={'widget-form'} onSubmit={this.submitImg}>
-          <img src={`${this.state.url}`} height="200" width="200" />
+          <img name={"my profile image"} src={`${this.state.url}`} height="200" width="200" />
           <br/>
           <input type="file" onChange={this.onChange} />
           <button type="submit">Update Profile</button>

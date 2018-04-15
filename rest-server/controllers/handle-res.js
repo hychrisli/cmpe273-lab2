@@ -36,7 +36,7 @@ exports.sendDoc = (res, doc) => {
 exports.sendInternalSystemError = (res, err) => {
   console.log(err);
   res = setObjectHeader(res);
-  res.status(500).send({success: false, message: "Internal System Error"});
+  res.status(500).send({success: false, message: "Internal System Error", error: err});
 };
 
 exports.sendNotFound = (res, err) => {

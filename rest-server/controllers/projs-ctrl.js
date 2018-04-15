@@ -3,7 +3,7 @@ const router = express.Router();
 const handleRes = require('./handle-res');
 const passport = require('passport');
 require('../auth/passport')(passport);
-const {jwtDecode} = require('./lib');
+const {jwtDecode, paginate} = require('./lib');
 
 const kafkaClient = require('../kafka-client/client');
 const {
@@ -31,27 +31,57 @@ const {
  *        required: false
  *        type: string
  *        description: retrieve projects as employer
+ *      - name: chosenBidder
+ *        in : query
+ *        required: false
+ *        type: string
+ *        description: retrieve projects as employer
  *      - name: status
  *        in : query
  *        required: false
  *        type: number
- *        description: retrieve projects as employer
+ *        description: retrieve active projects
+ *      - name: title
+ *        in : query
+ *        required: false
+ *        type: string
+ *        description: search title
+ *      - name: skill
+ *        in : query
+ *        required: false
+ *        type: string
+ *        description: search skill
+ *      - name: _start
+ *        in : query
+ *        required: false
+ *        type: number
+ *        description: pagination start
+ *      - name: _end
+ *        in: query
+ *        required: false
+ *        type: number
+ *        description: pagination end
  *    responses:
  *      200:
  *        description: projects
  */
 router.get('/', (req, res) => {
   const status = req.query.status === undefined ? 0: req.query.status;
+  const pagin = paginate(req);
   kafkaClient.make_request(
     FLC_TPC_PROJECT,
     GET_ALL,
     {
       employerId: req.query.employerId,
-      status
+      chosenBidder: req.query.chosenBidder,
+      status,
+      pagin,
+      title: req.query.title,
+      skill: req.query.skill
     },
-    (err, docs) => {
+    (err, data) => {
       if (err) handleRes.sendInternalSystemError(res, err);
-      else handleRes.sendArray(res, docs);
+      else handleRes.sendArray(res, data.projects, data.cnt);
     });
 });
 

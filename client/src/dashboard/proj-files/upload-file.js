@@ -32,24 +32,27 @@ class FileUpload extends Component{
     const formData = new FormData();
     console.log(this.props);
 
-    formData.append('project_id',project.id);
-    formData.append('owner_id', project.employer_id);
+    formData.append('projectId',project.id);
     formData.append('file', this.state.file);
-    const url = `${process.env.REACT_APP_API_URL}/proj-files/`;
-    console.log(url);
-    fetch(url, {
-      method:'POST',
-      body: formData
-    })
-      .then(() => {
-        showNotification('Uploaded');
-        goBack();
+    const storedToken = localStorage.getItem('token');
+    if ( storedToken ) {
+      const token = JSON.parse(storedToken);
+      const url = `${process.env.REACT_APP_API_URL}/proj-files/`;
+      fetch(url, {
+        method: 'POST',
+        headers: new Headers({'Authorization': token}),
+        body: formData
       })
-      .catch((e) => {
-        console.error(e);
-        showNotification('Failed to Upload');
-      })
-    };
+        .then(() => {
+          showNotification('Uploaded');
+          goBack();
+        })
+        .catch((e) => {
+          console.error(e);
+          showNotification('Failed to Upload');
+        })
+    }
+  };
 
   render() {
     return(

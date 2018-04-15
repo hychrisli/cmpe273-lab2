@@ -1,22 +1,33 @@
 import React from 'react';
-import {List, Datagrid, TextField, ShowButton, ReferenceField, ReferenceArrayField} from 'admin-on-rest';
-import {Edit, SimpleForm, TextInput, NumberInput, SingleFieldList} from 'admin-on-rest';
-import {Filter, Create, DateInput, Show, SimpleShowLayout, DateField, ChipField} from 'admin-on-rest';
+import {List, Datagrid, TextField, ShowButton, ReferenceField} from 'admin-on-rest';
+import {Edit, SimpleForm, TextInput, NumberInput, SelectInput} from 'admin-on-rest';
+import {Filter, Create, DateInput, Show, SimpleShowLayout, DateField} from 'admin-on-rest';
 import {ListButton, RefreshButton } from 'admin-on-rest';
 import { CardActions } from 'material-ui/Card';
-import Divider from 'material-ui/Divider';
+
 import BidButton from './button-bid'
 import EditButton from './button-edit'
-import SkillsButton from './button-skills'
+import ListActionButton from './buttion-list-action';
+import ShowActionButton from './button-show-action';
 import AddSkillButton from '../proj-skills/button-add-skill';
 import UploadButton from '../proj-files/button-upload';
 import ListFilesButton from '../proj-files/button-list-files'
+import ListBidsButton from '../bids/button-list-bids';
 import { connect } from 'react-redux';
+import {detailStyle,buttonStyle, dividerStyle, MyDivider} from '../lib/style'
 // List
 
 const ProjFilter = (props) => (
   <Filter {...props}>
     <TextInput label={"Employer ID"} source={"employerId"}/>
+    <TextInput label={"Chosen Bidder"} source={"chosenBidder"}/>
+    <TextInput label={"Project Title"} source={"title"}/>
+    <TextInput label={"Skill"} source={"skill"}/>
+    <SelectInput source="status" choices={[
+      { id: 0, name: 'Bidding' },
+      { id: 1, name: 'Working' },
+      { id: 2, name: 'Closed' },
+    ]} alwaysOn/>
   </Filter>
 );
 
@@ -28,9 +39,11 @@ export const ProjList = (props) => (
       <ReferenceField label={"Employer"} source="employerId" reference={"users"} linkType="show">
         <TextField source={"username"}/>
       </ReferenceField>
-      <BidButton/>
-      <EditButton/>
+      <TextField source="skills"/>
+      <TextField source="bidNum" label={"# of Bids"}/>
+      <TextField source="range" label={"Budget($)"}/>
       <ShowButton/>
+      <ListActionButton/>
     </Datagrid>
   </List>
 );
@@ -45,8 +58,6 @@ const ProjEditActions = ({basePath, data}) => (
   <CardActions style={cardActionStyle}>
     <ShowButton basePath={basePath} record={data}/>
     <ListButton basePath={basePath} />
-    <AddSkillButton record={data}/>
-    <UploadButton record={data}/>
     <RefreshButton />
   </CardActions>
 );
@@ -56,21 +67,15 @@ export const ProjEdit = (props) => (
     <SimpleForm>
       <TextInput source="title"/>
       <TextInput source="description"/>
-      <NumberInput source="min_budget"/>
-      <NumberInput source="max_budget"/>
-      <DateInput source="start_date"/>
-      <ReferenceArrayField label={"skills"} reference={"skills"} source={"skills"}>
-        <SingleFieldList>
-          <ChipField source={"skillName"}/>
-        </SingleFieldList>
-      </ReferenceArrayField>
-      <AddSkillButton/>
-      <ReferenceArrayField label={"files"} reference={"proj-files"} source={"files"}>
-        <SingleFieldList>
-          <ChipField source={"fileName"}/>
-        </SingleFieldList>
-      </ReferenceArrayField>
-      <UploadButton/>
+      <NumberInput source="minBudget" label={"Min Budget"}/>
+      <NumberInput source="maxBudget" label={"Max Budget"}/>
+      <DateInput source="startDate" label={"Start Date"}/>
+      <MyDivider style={dividerStyle}/>
+      <TextField label={"skills"} source={"skills"} style={detailStyle}/>
+      <AddSkillButton style={buttonStyle}/>
+      <MyDivider style={dividerStyle}/>
+      <UploadButton style={buttonStyle}/>
+      <ListFilesButton style={buttonStyle}/>
     </SimpleForm>
   </Edit>
 );
@@ -106,13 +111,8 @@ const ProjShowActions = ({basePath, data}) => (
   <CardActions style={cardActionStyle}>
     <ListButton basePath={basePath} />
     <RefreshButton />
-    <SkillsButton record={data}/>
   </CardActions>
 );
-
-const detailStyle = { display: 'inline-block', verticalAlign: 'top', marginRight: '2em', minWidth: '8em', marginBottom: '2em' };
-const MyDivider = ({source, record = {}}) => (<Divider />);
-
 
 export const ProjShow = (props) => {
   return (
@@ -129,11 +129,13 @@ export const ProjShow = (props) => {
       <TextField source={"description"} style={detailStyle}/>
       <MyDivider />
       <TextField source={"chosenBid"} style={detailStyle}/>
-      <TextField source={"bids"}  label={"# of Bids"} style={detailStyle}/>
+      <TextField source={"bidNum"}  label={"# of Bids"} style={detailStyle}/>
       <TextField source={"avgPrice"}  label={"Avg. Bid Price"} style={detailStyle}/>
-      <MyDivider />
       <TextField source={"skills"} style={detailStyle}/>
-      <ListFilesButton {...props}/>
+      <MyDivider />
+      <ListBidsButton {...props} style={buttonStyle}/>
+      <ListFilesButton {...props} style={buttonStyle}/>
+      <ShowActionButton {...props} style={buttonStyle}/>
     </SimpleShowLayout>
   </Show>
 )};

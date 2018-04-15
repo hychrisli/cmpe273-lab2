@@ -15,31 +15,60 @@ exports.handleGetProjectSkills = (req, cb) =>{
 exports.handlePostProjectSkills = (req, cb) =>{
 
   console.log(req);
-  Project.findOne({_id: req.projectId, employerId: req.userId}, (err, data) => {
-    if (err) cb (err);
-    else if ( data === null ) cb("Invalid Project");
-    else {
-      const skIds = req.skIdStr.split(',');
+  Promise.all([
+    Project.findOne({_id: req.projectId, employerId: req.userId}),
+    ProjectSkill.find({projectId: req.projectId})
+  ])
+    .then(([project, projectSkills]) => {
+      if (project === null) cb("Invalid Project");
+      else {
 
-      Skill.find({_id: {$in: skIds}}, (err, data) => {
-        if (err) cb(err);
-        else if (data === null) cb("Invalid Skills");
-        else {
-          const projectSkills = [];
+        console.log(projectSkills);
 
-          for (let i = 0; i < skIds.length; i++) {
-            projectSkills.push({
-              projectId: req.projectId,
-              skillId: data[i]._id.str,
-              skillName: data[i].skillName
+        // Gather current skills
+        const skillNameSet = new Set();
+        for ( let i = 0; i < projectSkills.length; i++) {
+          skillNameSet.add(projectSkills[i].skillName)
+        }
+
+        const skIds = req.skIdStr.split(',');
+
+        // look for skills
+        Skill.find({_id: {$in: skIds}}, (err, data) => {
+          if (err) cb(err);
+          else if (data === null) cb("Invalid Skills");
+          else {
+            const projectSkills = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              if ( !skillNameSet.has(data[i].skillName) ) {
+                projectSkills.push({
+                  projectId: req.projectId,
+                  skillId: data[i]._id,
+                  skillName: data[i].skillName
+                });
+                skillNameSet.add(data[i].skillName);
+              }
+            }
+
+            const skillNames = Array.from(skillNameSet);
+
+            // insert and update
+            ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err) => {
+              if (err && err.code !== 11000) cb(err);
+              else {
+                Project.update({_id: req.projectId}, {$set: {skills: skillNames.join(', ')}},
+                  (err) => {
+                    if (err) cb(err);
+                    else cb(null, projectSkills)
+                  })
+                }
+              });
+              }
             });
           }
-          ProjectSkill.collection.insert(projectSkills, {ordered: false}, (err, data) => {
-            if (err && err.code !== 11000) cb(err);
-            else cb(null, projectSkills);
-          });
-        }
-      });
-    }
-  });
+    })
+    .catch(err => {
+      if (err) cb(err);
+    });
 };

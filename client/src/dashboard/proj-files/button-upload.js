@@ -19,7 +19,7 @@ class UploadButton extends Component{
   };
 
   render() {
-    return <FlatButton label={"Upload"} onClick={this.handleClick}/>
+    return <FlatButton label={"Upload File"} onClick={this.handleClick}/>
   }
 }
 

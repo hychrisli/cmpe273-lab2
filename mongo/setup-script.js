@@ -24,10 +24,91 @@ db.User.insert([
     firstName: 'Walter',
     lastName: 'Smith',
     password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
-    email: 'walter@world.com',
+    email: 'walter@toysrus.com',
     aboutMe: "Hi, y'all",
   },
+  {
+    username: 'lat',
+    firstName: 'Lauren',
+    lastName: 'Tyler',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'lat@myspace.com',
+    aboutMe: "Yes, Please",
+  },
+  {
+    username: 'lot',
+    firstName: 'Lorde',
+    lastName: 'Third',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'lot@netview.com',
+    aboutMe: "Be Hold",
+  },
+  {
+    username: 'Yet',
+    firstName: 'Yoki',
+    lastName: 'Tammy',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'yet@aol.com',
+    aboutMe: "Howdy, Howdy",
+  },
+  {
+    username: 'MeToo',
+    firstName: 'Marry',
+    lastName: 'James',
+    password: '$2a$10$bNqsANQaxojDrovhLCF2DeaSxXKMA6l1iss/nzzBkS/SdhhtWCPT6',
+    email: 'marry@yahoo.com',
+    aboutMe: "Merry Christmas, Everyone",
+  },
 ]);
+
+//Balance
+db.Balance.drop();
+db.createCollection('Balance');
+db.Balance.insert([
+  {
+    userId: db.User.findOne({username: 'xyz'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'abc'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'wer'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'lot'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'Yet'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+  {
+    userId: db.User.findOne({username: 'MeToo'})._id.str,
+    total: 100.0,
+    income: 0.0,
+    expense: 0.0
+  },
+]);
+
 
 // Skill
 db.Skill.drop();
@@ -127,6 +208,31 @@ db.UserSkill.insert([
     skillId: db.Skill.findOne({skillName: 'Linux'})._id.str,
     skillName: 'Linux'
   },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Kafka'})._id.str,
+    skillName: 'JQuery'
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Hadoop'})._id.str,
+    skillName: 'C++'
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'Linux'})._id.str,
+    skillName: 'Linux'
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'JQuery'})._id.str,
+    skillName: 'JQuery'
+  },
 ]);
 
 
@@ -141,6 +247,8 @@ db.Project.insert([
     minBudget: 300.0,
     maxBudget: 400.0,
     startDate: new Date('2018-01-23'),
+    bidNum: 0,
+    skills: 'C++, Android, JQuery',
     status: 0,
   },
   {
@@ -150,6 +258,8 @@ db.Project.insert([
     minBudget: 400.0,
     maxBudget: 600.0,
     startDate: new Date('2017-12-24'),
+    bidNum: 5,
+    skills: 'GCP',
     status: 0,
   },
   {
@@ -159,6 +269,8 @@ db.Project.insert([
     minBudget: 500.0,
     maxBudget: 800.0,
     startDate: new Date('2018-02-12'),
+    bidNum: 2,
+    skills: 'Spark, Oracle, JQuery',
     status: 0,
   },
   {
@@ -168,6 +280,85 @@ db.Project.insert([
     minBudget: 540.0,
     maxBudget: 1200.0,
     startDate: new Date('2018-03-12'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'Save the world',
+    description: 'Let us save the world with love, or something else. Money?',
+    employerId: db.User.findOne({username: 'wer'})._id.str,
+    minBudget: 300.0,
+    maxBudget: 700.0,
+    startDate: new Date('2018-04-12'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'Exciting Old Project',
+    description: 'Are you excited about new projects or old projects? Come take a look on ours',
+    employerId: db.User.findOne({username: 'abc'})._id.str,
+    minBudget: 458.0,
+    maxBudget: 999.0,
+    startDate: new Date('2018-04-21'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'I Beg Your Pardon',
+    description: 'How to beg pardons? Well, our project will give you some clue',
+    employerId: db.User.findOne({username: 'lat'})._id.str,
+    minBudget: 478.0,
+    maxBudget: 987.0,
+    startDate: new Date('2018-05-04'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'Plant a Bird Tree',
+    description: 'Can someone please plant a tree that grows birds APSP?! I need you help',
+    employerId: db.User.findOne({username: 'lat'})._id.str,
+    minBudget: 478.0,
+    maxBudget: 987.0,
+    startDate: new Date('2018-05-11'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'Push your car to office',
+    description: 'Tips to push my Toyota Camry 1999 to my workplace. This must be special',
+    employerId: db.User.findOne({username: 'lot'})._id.str,
+    minBudget: 200.0,
+    maxBudget: 300.0,
+    startDate: new Date('2018-03-10'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'Help needed to refuse to help',
+    description: 'Can someone give me advice to not help anyone? Please :)',
+    employerId: db.User.findOne({username: 'lot'})._id.str,
+    minBudget: 350.0,
+    maxBudget: 567.0,
+    startDate: new Date('2018-04-30'),
+    bidNum: 0,
+    skills: '',
+    status: 0,
+  },
+  {
+    title: 'How to Survive in Concrete Jungle',
+    description: 'They say if you make it in the concrete jungle, you can make it anywhere',
+    employerId: db.User.findOne({username: 'MeToo'})._id.str,
+    minBudget: 258.0,
+    maxBudget: 369.0,
+    startDate: new Date('2018-05-30'),
+    bidNum: 0,
+    skills: '',
     status: 0,
   }
 ]);
@@ -189,6 +380,16 @@ db.ProjectSkill.insert([
   {
     projectId: db.Project.findOne({title: 'project 1'})._id.str,
     skillId: db.Skill.findOne({skillName: 'Android'})._id.str,
+    skillName: 'Android'
+  },
+  {
+    projectId: db.Project.findOne({title: 'project 1'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'GCP'})._id.str,
+    skillName: 'Android'
+  },
+  {
+    projectId: db.Project.findOne({title: 'project 1'})._id.str,
+    skillId: db.Skill.findOne({skillName: 'AJAX'})._id.str,
     skillName: 'Android'
   },
   {
@@ -253,6 +454,30 @@ db.Bid.insert([
     employerId: db.User.findOne({username: 'xyz'})._id.str,
     bidPrice: 430,
     bidDays: 65,
+    isActive: true
+  },
+  {
+    userId: db.User.findOne({username: 'lot'})._id.str,
+    projectId: db.Project.findOne({title: 'project 2'})._id.str,
+    employerId: db.User.findOne({username: 'xyz'})._id.str,
+    bidPrice: 550,
+    bidDays: 50,
+    isActive: true
+  },
+  {
+    userId: db.User.findOne({username: 'lat'})._id.str,
+    projectId: db.Project.findOne({title: 'project 2'})._id.str,
+    employerId: db.User.findOne({username: 'xyz'})._id.str,
+    bidPrice: 660,
+    bidDays: 60,
+    isActive: true
+  },
+  {
+    userId: db.User.findOne({username: 'Yet'})._id.str,
+    projectId: db.Project.findOne({title: 'project 2'})._id.str,
+    employerId: db.User.findOne({username: 'xyz'})._id.str,
+    bidPrice: 700,
+    bidDays: 50,
     isActive: true
   }
 ]);

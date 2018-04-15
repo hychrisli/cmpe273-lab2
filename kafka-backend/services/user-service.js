@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Balance = require('../models/balance');
 const handler = require('./handler');
 
 exports.handleGetUsers = (req, cb) => {
@@ -21,7 +22,25 @@ exports.handlePostUser = (req, cb) => {
         password: req.password,
         email: req.email
       });
-      user.save((err, data) => {handler.genericCallback(err, data, cb)});
+
+      const balance = new Balance({
+        userId: user._id
+      });
+
+      Promise.all([
+        user.save(),
+        balance.save()
+      ])
+        .then(([userFb, balFb]) => {
+          console.log(balFb);
+          cb(null, userFb);
+        })
+        .catch(err => {
+          console.log(err);
+          cb(err)
+        });
+
+      //user.save((err, data) => {handler.genericCallback(err, data, cb)});
     } else handler.genericCallback(err, user, cb);
   });
 

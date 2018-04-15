@@ -18,22 +18,30 @@ class HireButton extends Component{
   handleClick =  () => {
 
     const{push, record, showNotification} = this.props;
-    const url = `${process.env.REACT_APP_API_URL}/hire/` + record.project_id;
-    fetch(url, {
-      method:'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({'chosenBid': record.id})
-    })
-      .then(() => {
-        showNotification('Hired!');
-        push('/projects/' + record.project_id + '/show');
+
+
+    const storedToken = localStorage.getItem('token');
+    if ( storedToken ) {
+      const token = JSON.parse(storedToken);
+      const url = `${process.env.REACT_APP_API_URL}/hire/` + record.projectId;
+
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({'chosenBid': record.id})
       })
-      .catch((e) => {
-        console.error(e);
-        showNotification('Failed to Hire');
-      })
+        .then(() => {
+          showNotification('Hired!');
+          push('/projects/' + record.projectId + '/show');
+        })
+        .catch((e) => {
+          console.error(e);
+          showNotification('Failed to Hire');
+        })
+    }
 
   };
 
@@ -45,7 +53,7 @@ class HireButton extends Component{
       }
     } = this.props;
 
-    const isDisabled = !(record.isActive === 'true' && token.id === record.employerId);
+    const isDisabled = !(record.isActive === true && token.id === record.employerId);
     return <FlatButton label={"Hire"} disabled={isDisabled} onClick={this.handleClick}/>
   }
 }
