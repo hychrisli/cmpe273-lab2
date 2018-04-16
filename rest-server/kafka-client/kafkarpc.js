@@ -71,7 +71,7 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
   var consumer = new self.connection.getConsumer(resTopic);
   const offset = new self.connection.getOffset();
   consumer.on('message', function (message) {
-    // console.log('REST Server Received: ', resTopic);
+    //console.log('REST Server Received: ', resTopic);
     var res = JSON.parse(message.value);
     //get the correlationId
     var correlationId = res.correlationId;
