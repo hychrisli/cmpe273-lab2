@@ -5,7 +5,6 @@ require('dotenv').config({ path: dotEnvPath});
 
 const config = require('config');
 
-
 exports.cnxPool = mysql.createPool({
   connectionLimit: 20,
   host: config.get("DBHost"),

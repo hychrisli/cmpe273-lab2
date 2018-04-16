@@ -1,5 +1,12 @@
 var kafka = require('kafka-node');
-const kafkaHost = process.env.KAFKA_HOST;
+const path = require('path');
+const dotEnvPath = path.resolve('./.env');
+require('dotenv').config({ path: dotEnvPath});
+
+const config = require('config');
+const kafkaHost = config.get('KAFKA_HOST');
+
+// const kafkaHost = process.env.KAKFA_HOST;
 
 function ConnectionProvider() {
 
@@ -17,7 +24,6 @@ function ConnectionProvider() {
 
   //Code will be executed when we start Producer
   this.getProducer = function () {
-
     if (!this.kafkaProducerConnection) {
       this.client = new kafka.KafkaClient({kafkaHost});
       var HighLevelProducer = kafka.HighLevelProducer;

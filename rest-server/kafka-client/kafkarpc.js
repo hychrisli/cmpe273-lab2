@@ -36,7 +36,7 @@ KafkaRPC.prototype.makeRequest = function (topic, type, data, callback) {
     timeout: tId //the id for the timeout so we can clear it
   };
 
-  console.log(type);
+  //console.log(type);
   const replyTo = topic + '_RS';
   //make sure we have a response topic
   self.setupResponseQueue(self.producer, replyTo, function () {
@@ -56,7 +56,7 @@ KafkaRPC.prototype.makeRequest = function (topic, type, data, callback) {
     ];
     self.producer.send(payloads, function (err, data) {
       if (err) console.log(err);
-      else console.log('REST Server Produced: ', data);
+      // else console.log('REST Server Produced: ', data);
     });
   });
 };
@@ -71,7 +71,7 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, resTopic, next) {
   var consumer = new self.connection.getConsumer(resTopic);
   const offset = new self.connection.getOffset();
   consumer.on('message', function (message) {
-    console.log('REST Server Received: ', resTopic);
+    // console.log('REST Server Received: ', resTopic);
     var res = JSON.parse(message.value);
     //get the correlationId
     var correlationId = res.correlationId;
