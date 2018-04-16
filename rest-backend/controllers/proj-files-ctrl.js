@@ -4,6 +4,8 @@ const projFileDao = require('../dao/proj-files-dao');
 const fs = require('fs');
 const fileDir = process.cwd() + process.env.FILE_DIR;
 const {promisePostNotice, promiseGetResponse} = require('./ctrls');
+const ProjectFile = require ('../models/project-file');
+const handleRes = require('./handle-res');
 
 /**
  * @swagger
@@ -25,12 +27,10 @@ const {promisePostNotice, promiseGetResponse} = require('./ctrls');
  *        description: project skills
  */
 router.get('/', (req, res) => {
-  const project_id = req.query.project_id;
-  let filter = {};
-  if (project_id !== undefined) {
-    filter['project_id'] = project_id;
-  }
-  promiseGetResponse(projFileDao.retrieve(filter), res, 200);
+  ProjectFile.find({}, (err, data) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+    else handleRes.sendArray(res, data);
+  });
 });
 
 

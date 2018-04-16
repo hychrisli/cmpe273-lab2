@@ -187,17 +187,17 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  *        in: formData
  *        required: false
  *        type: string
- *      - name: min_budget
+ *      - name: minBudget
  *        description: minimum budget of the project
  *        in: formData
  *        required: false
  *        type: string
- *      - name: max_budget
+ *      - name: maxBudget
  *        description: maximum budget of the project
  *        in: formData
  *        required: false
  *        type: string
- *      - name: start_date
+ *      - name: startDate
  *        description: The start date of the project
  *        in: formData
  *        required: false
@@ -208,15 +208,13 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
  */
 
 router.put('/:project_id', passport.authenticate('jwt', {session: false}), (req, res) => {
-  console.log(req.params.project_id);
-  const date = new Date(req.body.start_date);
-  req.body.start_date = date.toISOString().slice(0, 10);
-  delete req.body['skills'];
-  delete req.body['files'];
-  delete req.body['bids'];
-  delete req.body['avg_price'];
-  console.log(req.body);
-  promisePostResponse(projDao.update(Number(req.params.project_id), req.body), req, res, 200);
+  const form = req.body;
+  console.log(form);
+  Project.update({_id: req.params.project_id}, {$set: form},
+    (err, data) => {
+    if (err) handleRes.sendInternalSystemError(res, err);
+      else handleRes.sendOK(res)
+    });
 });
 
 module.exports = router;
