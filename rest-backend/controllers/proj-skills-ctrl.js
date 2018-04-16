@@ -33,7 +33,6 @@ router.get('/', (req, res) => {
     if (err) handleRes.sendNotFound(res, err);
     else handleRes.sendArray(res, docs);
   })
-
 });
 
 /**
