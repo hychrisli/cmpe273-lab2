@@ -43,7 +43,8 @@ app.use(fileUpload({preserveExtension: true}));
 const corsOptions = {
   credentials: true,
   origin: true,
-  methods: ['GET', 'PUT', 'POST', 'DELETE']
+  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  allowHeaders:['Authorization', 'API-Token', 'API-Token-Expiry']
 };
 
 app.use(cors(corsOptions));

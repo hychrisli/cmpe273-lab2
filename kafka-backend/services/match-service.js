@@ -26,7 +26,7 @@ exports.handleGetMatchedProjects = (req, cb) => {
             else {
               const projects = {};
               for (let i = 0; i < data.length; i++) {
-                if (data[i].count >= 1) {
+                if (data[i].count >= 3) {
                   projects[data[i]._id] = data[i].skills.join(',');
                 }
               }
